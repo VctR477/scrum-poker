@@ -4,7 +4,7 @@ import { StackBox } from '../stack-box';
 import { Button } from '../button';
 import { STACKS } from '../../constants';
 import './page.css';
-import { myActionCreator} from "../../actions";
+import { myActionCreator, myActionCreator2 } from "../../actions";
 
 const totalPeople = 38;
 const voitedPeople = 35;
@@ -101,6 +101,10 @@ export const Page = () => {
         dispatch(myActionCreator());
     };
 
+    const asyncFn = () => {
+        dispatch(myActionCreator2(234234));
+    };
+
     return (
         <div className="page">
             <div className="page__stacks">
@@ -122,6 +126,7 @@ export const Page = () => {
                     { count } из { totalPeople }
                 </div>
                 <Button text="Я оценил" onClick={ fn }/>
+                <Button text="Я не оценил" onClick={ asyncFn }/>
             </div>
         </div>
     );
