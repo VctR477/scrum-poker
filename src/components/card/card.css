@@ -1,0 +1,17 @@
+.card {
+    width: var(--card-width);
+    height: var(--card-height);
+    background: var(--card-light);
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 30px;
+    line-height: 42px;
+}
+
+.card-dark {
+    background: var(--card-dark);
+}

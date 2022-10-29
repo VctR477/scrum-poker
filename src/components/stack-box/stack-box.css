@@ -1,0 +1,15 @@
+.stack-box__title {
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 42px;
+    color: var(--text-color);
+    margin-bottom: 4px;
+}
+
+.cards-box {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 392px;
+    min-height: 154px;
+}

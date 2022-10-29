@@ -1,0 +1,14 @@
+.card-column__amount {
+    margin-top: 8px;
+}
+
+.card-column__voice {
+    height: 5px;
+    width: var(--card-width);
+    border-radius: var(--border-radius);
+    background: var(--card-light);
+}
+
+.card-column__voice + .card-column__voice {
+    margin-top: 4px;
+}
