@@ -1,8 +1,10 @@
 import React from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import { StackBox } from '../stack-box';
 import { Button } from '../button';
 import { STACKS } from '../../constants';
 import './page.css';
+import { myActionCreator} from "../../actions";
 
 const totalPeople = 38;
 const voitedPeople = 35;
@@ -91,6 +93,14 @@ const result = {
 
 
 export const Page = () => {
+    const dispatch = useDispatch();
+
+    const count = useSelector(state => state.count);
+
+    const fn = () => {
+        dispatch(myActionCreator());
+    };
+
     return (
         <div className="page">
             <div className="page__stacks">
@@ -109,14 +119,9 @@ export const Page = () => {
                 <div className="page__controls-header">
                     Проголосовали
                     <br />
-                    { voitedPeople } из { totalPeople }
+                    { count } из { totalPeople }
                 </div>
-                <Button text="Я оценил" disabled={ true }/>
-                <Button text="Я оценил"/>
-                <Button text="Вскрываемся" type="open" disabled={ true }/>
-                <Button text="Вскрываемся" type="open"/>
-                <Button text="Заново" type="repeat" disabled={ true }/>
-                <Button text="Заново" type="repeat"/>
+                <Button text="Я оценил" onClick={ fn }/>
             </div>
         </div>
     );
