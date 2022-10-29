@@ -9,3 +9,11 @@ export const SCALE = [
     '40',
     '?',
 ];
+
+export const STACKS = [
+    'Front',
+    'Middle',
+    'Pega',
+    'Test',
+    'Analyst',
+];

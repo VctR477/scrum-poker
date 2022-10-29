@@ -1,0 +1,18 @@
+.page {
+    display: grid;
+    grid-template-columns: 850px 246px;
+    justify-content: center;
+    column-gap: 100px;
+}
+
+.page__stacks {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    column-gap: 60px;
+}
+
+.page__controls {
+    width: 246px;
+    height: 160px;
+    background: yellow;
+}

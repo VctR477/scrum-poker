@@ -1,22 +1,12 @@
 import React from 'react';
 import './app.css';
-import { StackBox } from "./components/stack-box";
+import { Page } from "./components/page";
 
-const votes = {
-    '1': 1,
-    '3': 3,
-    '8': 8,
-}
 
-const myVotes = {
-    'Front': {
-        '8': true,
-    }
-}
 
 const App = () => (
-    <div className="App">
-        <StackBox stackName={'Front'} numberOfVoters={ 14 } votes={ votes } myVotes={ myVotes }/>
+    <div className="app">
+        <Page />
     </div>
 );
 

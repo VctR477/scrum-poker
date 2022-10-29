@@ -6,10 +6,14 @@ import './stack-box.css';
 export const StackBox = (props) => {
     const {
         stackName,
-        numberOfVoters,
         votes,
         myVotes,
     } = props;
+
+    const numberOfVoters = Object.keys(votes).reduce((acc, item) => {
+        const sum = acc + votes[item];
+        return sum;
+    }, 0);
 
     return (
         <div className="stack-box">
