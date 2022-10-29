@@ -4,6 +4,8 @@ import { Button } from '../button';
 import { STACKS } from '../../constants';
 import './page.css';
 
+const totalPeople = 38;
+const voitedPeople = 35;
 const myVotes = {
     'Front': {
         '8': true,
@@ -11,9 +13,55 @@ const myVotes = {
     'Test': {
         '3': true,
     },
+};
+
+const userData = {
+    isAdmin: false,
+    isOpen: false,
+    isReady: false,
+    myVotes: {
+        'Front': {
+            '8': true,
+        },
+        'Test': {
+            '3': true,
+        },
+    },
 }
 
-const data = {
+const common = {
+    totalPeople: 38,
+    voitedPeople: 35,
+    result: {
+        'Front': {
+            '1': 9,
+            '3': 3,
+            '8': 8,
+        },
+        'Middle': {
+            '2': 8,
+            '20': 3,
+            '13': 5,
+        },
+        'Pega': {
+            '2': 1,
+            '5': 3,
+            '40': 4,
+        },
+        'Test': {
+            '?': 4,
+            '1': 7,
+            '2': 2,
+        },
+        'Analyst': {
+            '3': 4,
+            '5': 2,
+            '8': 3,
+        },
+    },
+}
+
+const result = {
     'Front': {
         '1': 9,
         '3': 3,
@@ -51,13 +99,18 @@ export const Page = () => {
                         <StackBox
                             key={ stack }
                             stackName={ stack }
-                            votes={ data[stack] }
+                            votes={ result[stack] }
                             myVotes={ myVotes }
                         />
                     );
                 }) }
             </div>
             <div className="page__controls">
+                <div className="page__controls-header">
+                    Проголосовали
+                    <br />
+                    { voitedPeople } из { totalPeople }
+                </div>
                 <Button text="Я оценил" disabled={ true }/>
                 <Button text="Я оценил"/>
                 <Button text="Вскрываемся" type="open" disabled={ true }/>

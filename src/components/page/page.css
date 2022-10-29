@@ -15,3 +15,11 @@
     width: 246px;
     height: 160px;
 }
+
+.page__controls-header {
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 42px;
+    margin-bottom: 16px;
+}
