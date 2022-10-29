@@ -1,7 +1,8 @@
 import React from 'react';
-import './page.css';
 import { StackBox } from '../stack-box';
+import { Button } from '../button';
 import { STACKS } from '../../constants';
+import './page.css';
 
 const myVotes = {
     'Front': {
@@ -57,7 +58,12 @@ export const Page = () => {
                 }) }
             </div>
             <div className="page__controls">
-
+                <Button text="Я оценил" disabled={ true }/>
+                <Button text="Я оценил"/>
+                <Button text="Вскрываемся" type="open" disabled={ true }/>
+                <Button text="Вскрываемся" type="open"/>
+                <Button text="Заново" type="repeat" disabled={ true }/>
+                <Button text="Заново" type="repeat"/>
             </div>
         </div>
     );

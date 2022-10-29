@@ -1,7 +1,7 @@
 :root {
   --text-color: #000;
-  --card-light: rgba(210, 234, 255, 1);
-  --card-dark: rgba(142, 201, 255, 1);
+  --card-light: #D2EAFF;
+  --card-dark: #8EC9FF;
   --card-width: 40px;
   --card-height: 60px;
   --border-radius: 4px;
