@@ -1,22 +1,19 @@
 const WebSocket = require('ws');
-const http = require("http");
 const express = require('express');
 const path = require('path');
 const uuid = require('uuid').v4;
 const config = require('config');
 
 const PORT = process.env.PORT || config.get('serverPort') || 3000 ;
-const app = express();
-
-app.use(express.static(path.join(__dirname, 'build')));
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/build/index.html');
-});
-app.get('/admin', (req, res) => {
-    res.sendFile(__dirname + '/build/index.html');
-});
-const server = http.createServer(app);
-server.listen(PORT, () => console.log(`START --- Listening on ${ PORT }`));
+const server = express()
+    .use(express.static(path.join(__dirname, 'build')))
+    .get('/', (req, res) => {
+        res.sendFile(__dirname + '/build/index.html');
+    })
+    .get('/admin', (req, res) => {
+        res.sendFile(__dirname + '/build/index.html');
+    })
+    .listen(PORT, () => console.log(`START --- Listening on ${ PORT }`));
 
 const wss = new WebSocket.Server({ server: server });
 
