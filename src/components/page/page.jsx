@@ -27,9 +27,11 @@ export const Page = () => {
     } = data;
 
     const connect = () => {
-        socket.current = new WebSocket(`wss://${window.location.hostname}:3001`)
+        const host = window.location.origin.replace(/^http/, 'ws');
+        socket.current = new WebSocket(host);
 
         socket.current.onopen = function(event) {
+            console.log('Socket открыт');
             const { pathname } = window.location;
             const message = {
                 type: 'onopen',
@@ -40,6 +42,12 @@ export const Page = () => {
         socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data)
             dispatch(setData(message));
+        }
+        socket.current.onclose= (e) => {
+            console.log('Socket закрыт', e);
+        }
+        socket.current.onerror = (e) => {
+            console.log('Socket произошла ошибка', e);
         }
     };
 
