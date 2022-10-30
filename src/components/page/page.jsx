@@ -27,7 +27,7 @@ export const Page = () => {
     } = data;
 
     const connect = () => {
-        socket.current = new WebSocket(`ws://${window.location.host}`)
+        socket.current = new WebSocket(`wss://${window.location.host}`)
 
         socket.current.onopen = function(event) {
             const { pathname } = window.location;
