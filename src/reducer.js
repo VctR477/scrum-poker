@@ -4,7 +4,6 @@ const initialState = {
     result: {},
     user: {
         isAdmin: false,
-        isOpen: false,
         isReady: false,
         votes: {},
     },

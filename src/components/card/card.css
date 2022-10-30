@@ -20,3 +20,11 @@
 .card-dark {
     background: var(--card-dark);
 }
+
+.card-admin {
+    cursor: auto;
+}
+
+.card-admin:hover {
+    opacity: 1;
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { StackBox } from '../stack-box';
 import { Button } from '../button';
@@ -12,6 +12,7 @@ import './page.css';
 export const Page = () => {
     const dispatch = useDispatch();
     const socket = useRef();
+    const [isOpen, setIsOpen] = useState(false);
 
     const data = useSelector(state => state);
     const {
@@ -20,7 +21,6 @@ export const Page = () => {
         result = {},
         user: {
             isAdmin,
-            isOpen,
             isReady,
             votes,
         },
@@ -29,6 +29,14 @@ export const Page = () => {
     const connect = () => {
         socket.current = new WebSocket(`ws://${window.location.host}`)
 
+        socket.current.onopen = function(event) {
+            const { pathname } = window.location;
+            const message = {
+                type: 'onopen',
+                data: { pathname },
+            };
+            socket.current.send(JSON.stringify(message));
+        };
         socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data)
             dispatch(setData(message));
@@ -42,7 +50,23 @@ export const Page = () => {
         };
         dispatch(setReady());
         socket.current.send(JSON.stringify(message));
-    }
+    };
+
+    const handleOpen = async () => {
+        const message = {
+            type: 'open',
+        };
+        socket.current.send(JSON.stringify(message));
+        setIsOpen(true);
+    };
+
+    const handleReload = async () => {
+        const message = {
+            type: 'reload',
+        };
+        socket.current.send(JSON.stringify(message));
+        setIsOpen(false);
+    };
 
     useEffect(() => {
         connect();
@@ -68,11 +92,20 @@ export const Page = () => {
                     <br />
                     { voitedPeople } из { totalPeople }
                 </div>
-                <Button
-                    text="Я оценил"
-                    disabled={ isReady }
-                    onClick={ handleReady }
-                />
+                { isAdmin ? (
+                    <Button
+                        text={ isOpen ? 'Заново' : 'Вскрываемся' }
+                        disabled={ !voitedPeople }
+                        onClick={ isOpen ? handleReload: handleOpen }
+                        type={ isOpen ? 'repeat' : 'open' }
+                    />
+                ) : (
+                    <Button
+                        text="Я оценил"
+                        disabled={ isReady }
+                        onClick={ handleReady }
+                    />
+                ) }
             </div>
         </div>
     );

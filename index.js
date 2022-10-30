@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const WebSocket = require('ws');
 const uuid = require('uuid').v4;
-// import { SCALE, STACKS } from './src/constants.js';
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -25,7 +24,6 @@ const common = {
 }
 
 wss.on('connection', function connection(ws) {
-
     function sendEveryone(message) {
         wss.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
@@ -40,22 +38,27 @@ wss.on('connection', function connection(ws) {
     common.totalPeople += 1;
     clients[id] = {
         ws,
-        userData: {
+        user: {
             isAdmin: false,
-            isOpen: false,
             isReady: false,
-            myVotes: {},
+            votes: {},
         },
     };
 
-    sendEveryone(common);
+    ws.send(JSON.stringify({
+        user: clients[id].user,
+    }));
+    sendEveryone({
+        totalPeople: common.totalPeople,
+        voitedPeople: common.voitedPeople,
+    });
 
     console.log(`New client ${id}`);
 
     // Сообщение от клиента
     ws.on('message', function fromClient(rawMessage) {
         const { type, data } = JSON.parse(rawMessage);
-        console.log(data);
+        // console.log(data);
         switch (type) {
             case 'ready':
                 // Увеличиваем количество проголосовавших
@@ -70,7 +73,59 @@ wss.on('connection', function connection(ws) {
                         common.result[stack][data[stack]] = 1;
                     }
                 });
-                console.log(common.result);
+                // console.log(common.result);
+                break;
+            case 'onopen':
+                if (data.pathname === '/admin') {
+                    common.totalPeople -= 1;
+                    ws.send(JSON.stringify({
+                        user: {
+                            isAdmin: true,
+                            isReady: false,
+                            votes: {},
+                        }
+                    }));
+                    sendEveryone({
+                        totalPeople: common.totalPeople,
+                    });
+                }
+                break;
+            case 'open':
+                sendEveryone(common);
+                break;
+            case 'reload':
+                common.voitedPeople = 0;
+                common.result = {
+                    'Front': {},
+                    'Middle': {},
+                    'Pega': {},
+                    'Test': {},
+                    'Analyst': {},
+                };
+                const message = {
+                    ...common,
+                    user: {
+                        isAdmin: false,
+                        isReady: false,
+                        votes: {},
+                    },
+                };
+                wss.clients.forEach(function each(client) {
+                    if (client.readyState === WebSocket.OPEN) {
+                        if (client !== ws) {
+                            client.send(JSON.stringify(message));
+                        } else {
+                            client.send(JSON.stringify({
+                                ...common,
+                                user: {
+                                    isAdmin: true,
+                                    isReady: false,
+                                    votes: {},
+                                },
+                            }));
+                        }
+                    }
+                });
                 break;
             default:
                 break;
@@ -90,7 +145,10 @@ wss.on('connection', function connection(ws) {
 
 app.use(express.static(path.join(__dirname, 'build')));
 app.get('/', (req, res) => {
-    res.sendfile(__dirname + '/build/index.html');
+    res.sendFile(__dirname + '/build/index.html');
+});
+app.get('/admin', (req, res) => {
+    res.sendFile(__dirname + '/build/index.html');
 });
 
 server.listen(PORT, () => console.log(`START --- Listening on ${ PORT }`));

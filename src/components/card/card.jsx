@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { chooseCard } from '../../actions';
 import './card.css';
 
@@ -11,6 +11,12 @@ export const Card = (props) => {
         stackName,
     } = props;
 
+    const {
+        user: {
+            isAdmin,
+        },
+    } = useSelector(state => state);
+
     const handleClick = () => {
         dispatch(chooseCard({
             stackName,
@@ -18,11 +24,10 @@ export const Card = (props) => {
         }));
     };
 
-
     return (
         <div
-            className={ `card${isChosen ? ' card-dark' : ''}` }
-            onClick={ handleClick }
+            className={ `card${isChosen ? ' card-dark' : ''}${isAdmin ? ' card-admin' : ''}` }
+            onClick={ isAdmin ? null : handleClick }
         >
             { value }
         </div>
