@@ -25,8 +25,9 @@ export const StackBox = (props) => {
                     <CardColumn
                         key={ item }
                         value={ item }
-                        isChosen={ myVotes && myVotes[stackName] && myVotes[stackName][item] }
+                        isChosen={ myVotes && myVotes[stackName] && myVotes[stackName] === item }
                         amount={ votes && votes[item] ? votes[item] : 0 }
+                        stackName={ stackName }
                     />
                 )) }
             </div>

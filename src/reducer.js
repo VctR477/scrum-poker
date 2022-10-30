@@ -3,7 +3,6 @@ const initialState = {
     voitedPeople: 0,
     result: {},
     user: {
-        isLogged: false,
         isAdmin: false,
         isOpen: false,
         isReady: false,
@@ -20,6 +19,25 @@ export const reducer = (
             return {
                 ...state,
                 ...payload,
+            };
+        case 'CHOOSE_CARD':
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    votes: {
+                        ...state.user.votes,
+                        [payload.stackName]: payload.value,
+                    }
+                },
+            };
+        case 'SET_READY':
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    isReady: true,
+                },
             };
         default:
             return state;

@@ -3,7 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { StackBox } from '../stack-box';
 import { Button } from '../button';
 import { STACKS } from '../../constants';
-import { fetchData } from '../../actions';
+import {
+    setData,
+    setReady,
+} from '../../actions';
 import './page.css';
 
 export const Page = () => {
@@ -16,7 +19,6 @@ export const Page = () => {
         voitedPeople,
         result = {},
         user: {
-            isLogged,
             isAdmin,
             isOpen,
             isReady,
@@ -29,14 +31,16 @@ export const Page = () => {
 
         socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data)
-            console.log(message);
+            dispatch(setData(message));
         }
     };
 
-    const sendMessage = async () => {
+    const handleReady = async () => {
         const message = {
-            text: 'Hello from Client',
+            type: 'ready',
+            data: votes,
         };
+        dispatch(setReady());
         socket.current.send(JSON.stringify(message));
     }
 
@@ -64,7 +68,11 @@ export const Page = () => {
                     <br />
                     { voitedPeople } из { totalPeople }
                 </div>
-                <Button text="Я оценил" onClick={ sendMessage }/>
+                <Button
+                    text="Я оценил"
+                    disabled={ isReady }
+                    onClick={ handleReady }
+                />
             </div>
         </div>
     );

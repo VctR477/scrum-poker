@@ -24,37 +24,66 @@ const common = {
     },
 }
 
-
 wss.on('connection', function connection(ws) {
+
+    function sendEveryone(message) {
+        wss.clients.forEach(function each(client) {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify(message));
+            }
+        });
+    }
+
     const id = uuid();
+
+    // Увеличиваем число подключаемых людей
+    common.totalPeople += 1;
     clients[id] = {
         ws,
-        data: {
-            common,
-            userData: {
-                isAdmin: false,
-                isOpen: false,
-                isReady: false,
-                myVotes: {},
-            }
+        userData: {
+            isAdmin: false,
+            isOpen: false,
+            isReady: false,
+            myVotes: {},
         },
     };
-    console.log(`New client ${id}`);
-    // ws.send(JSON.stringify({ x: 'Welcome New Client!'}));
 
+    sendEveryone(common);
+
+    console.log(`New client ${id}`);
+
+    // Сообщение от клиента
     ws.on('message', function fromClient(rawMessage) {
-        console.log('RAWWW from CLIENT: ',rawMessage);
-        const message = JSON.parse(rawMessage);
-        console.log('from CLIENT: ', message);
-        // wss.clients.forEach(function each(client) {
-        //     if (client.readyState === WebSocket.OPEN) {
-        //         client.send(message);
-        //     }
-        // });
+        const { type, data } = JSON.parse(rawMessage);
+        console.log(data);
+        switch (type) {
+            case 'ready':
+                // Увеличиваем количество проголосовавших
+                common.voitedPeople += 1;
+                sendEveryone({
+                    voitedPeople: common.voitedPeople,
+                });
+                Object.keys(data).forEach((stack) => {
+                    if (common.result[stack][data[stack]]) {
+                        common.result[stack][data[stack]] += 1;
+                    } else {
+                        common.result[stack][data[stack]] = 1;
+                    }
+                });
+                console.log(common.result);
+                break;
+            default:
+                break;
+        }
     });
 
+    // Закрытие соединения
     ws.on('close', () => {
         delete clients[id];
+        common.totalPeople -= 1;
+        sendEveryone({
+            totalPeople: common.totalPeople,
+        });
         console.log(`Client is closed ${id}`)
     })
 });

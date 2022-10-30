@@ -10,6 +10,11 @@
     font-weight: 500;
     font-size: 30px;
     line-height: 42px;
+    cursor: pointer;
+}
+
+.card:hover {
+    opacity: 0.8;
 }
 
 .card-dark {
