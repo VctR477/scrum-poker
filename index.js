@@ -2,12 +2,12 @@ const express = require('express');
 const path = require('path');
 const WebSocket = require('ws');
 const uuid = require('uuid').v4;
+const config = require('config');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || config.get('serverPort') || 3000 ;
 const app = express();
-const server = require('https').createServer(app);
 
-const wss = new WebSocket.Server({ server:server });
+const wss = new WebSocket.Server({ port: 3001 });
 
 const clients = {};
 
@@ -151,4 +151,4 @@ app.get('/admin', (req, res) => {
     res.sendFile(__dirname + '/build/index.html');
 });
 
-server.listen(PORT, () => console.log(`START --- Listening on ${ PORT }`));
+app.listen(PORT, () => console.log(`START --- Listening on ${ PORT }`));
