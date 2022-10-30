@@ -10,10 +10,10 @@ export const StackBox = (props) => {
         myVotes,
     } = props;
 
-    const numberOfVoters = Object.keys(votes).reduce((acc, item) => {
+    const numberOfVoters = votes ? Object.keys(votes).reduce((acc, item) => {
         const sum = acc + votes[item];
         return sum;
-    }, 0);
+    }, 0) : 0;
 
     return (
         <div className="stack-box">
@@ -26,7 +26,7 @@ export const StackBox = (props) => {
                         key={ item }
                         value={ item }
                         isChosen={ myVotes && myVotes[stackName] && myVotes[stackName][item] }
-                        amount={ votes[item] }
+                        amount={ votes && votes[item] ? votes[item] : 0 }
                     />
                 )) }
             </div>

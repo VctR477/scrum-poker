@@ -1,109 +1,48 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { StackBox } from '../stack-box';
 import { Button } from '../button';
 import { STACKS } from '../../constants';
+import { fetchData } from '../../actions';
 import './page.css';
-import { myActionCreator, myActionCreator2 } from "../../actions";
-
-const totalPeople = 38;
-const voitedPeople = 35;
-const myVotes = {
-    'Front': {
-        '8': true,
-    },
-    'Test': {
-        '3': true,
-    },
-};
-
-const userData = {
-    isAdmin: false,
-    isOpen: false,
-    isReady: false,
-    myVotes: {
-        'Front': {
-            '8': true,
-        },
-        'Test': {
-            '3': true,
-        },
-    },
-}
-
-const common = {
-    totalPeople: 38,
-    voitedPeople: 35,
-    result: {
-        'Front': {
-            '1': 9,
-            '3': 3,
-            '8': 8,
-        },
-        'Middle': {
-            '2': 8,
-            '20': 3,
-            '13': 5,
-        },
-        'Pega': {
-            '2': 1,
-            '5': 3,
-            '40': 4,
-        },
-        'Test': {
-            '?': 4,
-            '1': 7,
-            '2': 2,
-        },
-        'Analyst': {
-            '3': 4,
-            '5': 2,
-            '8': 3,
-        },
-    },
-}
-
-const result = {
-    'Front': {
-        '1': 9,
-        '3': 3,
-        '8': 8,
-    },
-    'Middle': {
-        '2': 8,
-        '20': 3,
-        '13': 5,
-    },
-    'Pega': {
-        '2': 1,
-        '5': 3,
-        '40': 4,
-    },
-    'Test': {
-        '?': 4,
-        '1': 7,
-        '2': 2,
-    },
-    'Analyst': {
-        '3': 4,
-        '5': 2,
-        '8': 3,
-    },
-};
-
 
 export const Page = () => {
     const dispatch = useDispatch();
+    const socket = useRef();
 
-    const count = useSelector(state => state.count);
+    const data = useSelector(state => state);
+    const {
+        totalPeople,
+        voitedPeople,
+        result = {},
+        user: {
+            isLogged,
+            isAdmin,
+            isOpen,
+            isReady,
+            votes,
+        },
+    } = data;
 
-    const fn = () => {
-        dispatch(myActionCreator());
+    const connect = () => {
+        socket.current = new WebSocket(`ws://${window.location.host}`)
+
+        socket.current.onmessage = (event) => {
+            const message = JSON.parse(event.data)
+            console.log(message);
+        }
     };
 
-    const asyncFn = () => {
-        dispatch(myActionCreator2(234234));
-    };
+    const sendMessage = async () => {
+        const message = {
+            text: 'Hello from Client',
+        };
+        socket.current.send(JSON.stringify(message));
+    }
+
+    useEffect(() => {
+        connect();
+    }, []);
 
     return (
         <div className="page">
@@ -114,7 +53,7 @@ export const Page = () => {
                             key={ stack }
                             stackName={ stack }
                             votes={ result[stack] }
-                            myVotes={ myVotes }
+                            myVotes={ votes }
                         />
                     );
                 }) }
@@ -123,10 +62,9 @@ export const Page = () => {
                 <div className="page__controls-header">
                     Проголосовали
                     <br />
-                    { count } из { totalPeople }
+                    { voitedPeople } из { totalPeople }
                 </div>
-                <Button text="Я оценил" onClick={ fn }/>
-                <Button text="Я не оценил" onClick={ asyncFn }/>
+                <Button text="Я оценил" onClick={ sendMessage }/>
             </div>
         </div>
     );

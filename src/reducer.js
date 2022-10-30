@@ -1,5 +1,14 @@
 const initialState = {
-    count: 0,
+    totalPeople: 0,
+    voitedPeople: 0,
+    result: {},
+    user: {
+        isLogged: false,
+        isAdmin: false,
+        isOpen: false,
+        isReady: false,
+        votes: {},
+    },
 };
 
 export const reducer = (
@@ -7,8 +16,11 @@ export const reducer = (
     { type, payload },
 ) => {
     switch (type) {
-        case 'MY_ACTION':
-            return { ...state, count: state.count + 1 };
+        case 'SET_DATA':
+            return {
+                ...state,
+                ...payload,
+            };
         default:
             return state;
     }

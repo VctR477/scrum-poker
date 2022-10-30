@@ -1,13 +1,11 @@
-const MY_ACTION = 'MY_ACTION';
+const SET_DATA = 'SET_DATA';
 
-export const myActionCreator = () => ({
-    type: MY_ACTION,
+export const setData = () => ({
+    type: SET_DATA,
 });
 
-export const myActionCreator2 = (arg) => (dispatch, getState) => {
-    console.log(arg)
+export const fetchData = () => async (dispatch, getState) => {
 
-    console.log(getState());
 
-    dispatch(myActionCreator());
+    // dispatch(setData(data));
 };
