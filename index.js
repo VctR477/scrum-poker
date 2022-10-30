@@ -5,7 +5,7 @@ const uuid = require('uuid').v4;
 
 const PORT = process.env.PORT || 3000;
 const app = express();
-const server = require('http').createServer(app);
+const server = require('https').createServer(app);
 
 const wss = new WebSocket.Server({ server:server });
 
