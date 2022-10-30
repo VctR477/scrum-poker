@@ -77,8 +77,10 @@ export const Page = () => {
     };
 
     useEffect(() => {
-        connect();
-    }, []);
+        if (!socket || !socket.current) {
+            connect();
+        }
+    }, [connect, socket]);
 
     return (
         <div className="page">
