@@ -111,6 +111,18 @@ wss.on('connection', function connection(ws) {
              *  ВСКРЫТИЕ
              */
             case 'open':
+                Object.keys(clients).forEach((id) => {
+                    if (!clients[id].user.isAdmin) {
+                        const votes = clients[id].user.votes;
+                        Object.keys(votes).forEach((stack) => {
+                            if (common.result[stack][votes[stack]]) {
+                                common.result[stack][votes[stack]] += 1;
+                            } else {
+                                common.result[stack][votes[stack]] = 1;
+                            }
+                        });
+                    }
+                });
                 sendEveryone(common);
                 break;
 
