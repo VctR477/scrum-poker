@@ -77,6 +77,7 @@ wss.on('connection', function connection(ws) {
                     voitedPeople: common.voitedPeople,
                 });
                 clients[id].user.votes = data;
+                clients[id].user.isReady = true;
                 // Object.keys(data).forEach((stack) => {
                 //     if (common.result[stack][data[stack]]) {
                 //         common.result[stack][data[stack]] += 1;
@@ -185,10 +186,14 @@ wss.on('connection', function connection(ws) {
         /**
          *  CLIENT
          */
-        delete clients[id];
         common.totalPeople -= 1;
+        if (clients[id].user.isReady) {
+            common.voitedPeople -= 1;
+        }
+        delete clients[id];
         sendEveryone({
             totalPeople: common.totalPeople,
+            voitedPeople: common.voitedPeople,
         });
         console.log(`Client is closed ${id}`);
     })
