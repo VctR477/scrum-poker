@@ -8,6 +8,7 @@ export const StackBox = (props) => {
         stackName,
         votes,
         myVotes,
+        onReject,
     } = props;
 
     const numberOfVoters = votes ? Object.keys(votes).reduce((acc, item) => {
@@ -28,6 +29,7 @@ export const StackBox = (props) => {
                         isChosen={ myVotes && myVotes[stackName] && myVotes[stackName] === item }
                         amount={ votes && votes[item] ? votes[item] : 0 }
                         stackName={ stackName }
+                        onReject={ onReject }
                     />
                 )) }
             </div>

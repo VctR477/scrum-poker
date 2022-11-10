@@ -9,6 +9,7 @@ export const Card = (props) => {
         value,
         isChosen,
         stackName,
+        onReject,
     } = props;
 
     const {
@@ -17,7 +18,10 @@ export const Card = (props) => {
         },
     } = useSelector(state => state);
 
-    const handleClick = () => {
+    const handleClick = async () => {
+        if (onReject) {
+            await onReject();
+        }
         dispatch(chooseCard({
             stackName,
             value,

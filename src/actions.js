@@ -12,8 +12,9 @@ export const chooseCard = (payload) => ({
     payload,
 });
 
-export const setReady = () => ({
+export const setReady = (payload) => ({
     type: SET_READY,
+    payload,
 });
 
 // export const fetchData = () => async (dispatch, getState) => {

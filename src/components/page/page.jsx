@@ -9,6 +9,14 @@ import {
 } from '../../actions';
 import './page.css';
 
+// TODO
+// 1. Повторный выбор карты - снимает выбор
+
+// 3. Поправить стили для мобильника
+// 4. Менять цифры рядом со стеками сразу после нажатия "Я оценил"
+
+// 6. Сохранять данные в случае переподключения юзера
+
 export const Page = () => {
     const dispatch = useDispatch();
     const socket = useRef();
@@ -56,7 +64,7 @@ export const Page = () => {
             type: 'ready',
             data: votes,
         };
-        dispatch(setReady());
+        dispatch(setReady(true));
         socket.current.send(JSON.stringify(message));
     };
 
@@ -76,6 +84,14 @@ export const Page = () => {
         setIsOpen(false);
     };
 
+    const handleReject = async () => {
+        const message = {
+            type: 'reject',
+        };
+        dispatch(setReady(false));
+        socket.current.send(JSON.stringify(message));
+    };
+
     useEffect(() => {
         if (!socket || !socket.current) {
             connect();
@@ -92,6 +108,7 @@ export const Page = () => {
                             stackName={ stack }
                             votes={ result[stack] }
                             myVotes={ votes }
+                            onReject={ isReady ? handleReject : null }
                         />
                     );
                 }) }

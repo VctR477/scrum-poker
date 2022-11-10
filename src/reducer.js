@@ -35,7 +35,7 @@ export const reducer = (
                 ...state,
                 user: {
                     ...state.user,
-                    isReady: true,
+                    isReady: payload,
                 },
             };
         default:

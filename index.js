@@ -66,25 +66,32 @@ wss.on('connection', function connection(ws) {
     // Сообщение от клиента
     ws.on('message', function fromClient(rawMessage) {
         const { type, data } = JSON.parse(rawMessage);
-        // console.log(data);
         switch (type) {
+            /**
+             *  КЛИК ПО "Я ОЦЕНИЛ"
+             */
             case 'ready':
                 // Увеличиваем количество проголосовавших
                 common.voitedPeople += 1;
                 sendEveryone({
                     voitedPeople: common.voitedPeople,
                 });
-                Object.keys(data).forEach((stack) => {
-                    if (common.result[stack][data[stack]]) {
-                        common.result[stack][data[stack]] += 1;
-                    } else {
-                        common.result[stack][data[stack]] = 1;
-                    }
-                });
-                // console.log(common.result);
+                clients[id].user.votes = data;
+                // Object.keys(data).forEach((stack) => {
+                //     if (common.result[stack][data[stack]]) {
+                //         common.result[stack][data[stack]] += 1;
+                //     } else {
+                //         common.result[stack][data[stack]] = 1;
+                //     }
+                // });
                 break;
+
+            /**
+             *  ПОДКЛЮЧЕНИЕ - ДЛЯ ОПРЕДЕЛЕНИЯ АДМИНА
+             */
             case 'onopen':
                 if (data.pathname === '/admin') {
+                    clients[id].user.isAdmin = true;
                     common.totalPeople -= 1;
                     ws.send(JSON.stringify({
                         user: {
@@ -98,9 +105,17 @@ wss.on('connection', function connection(ws) {
                     });
                 }
                 break;
+
+            /**
+             *  ВСКРЫТИЕ
+             */
             case 'open':
                 sendEveryone(common);
                 break;
+
+            /**
+             *  ПЕРЕЗАПУСК
+             */
             case 'reload':
                 common.voitedPeople = 0;
                 common.result = {
@@ -135,18 +150,46 @@ wss.on('connection', function connection(ws) {
                     }
                 });
                 break;
+
+            /**
+             *  ОТМЕНА ГОЛОСА
+             */
+            case 'reject':
+                common.voitedPeople -= 1;
+                sendEveryone({
+                    voitedPeople: common.voitedPeople,
+                });
+                clients[id].user.votes = {};
+                break;
             default:
                 break;
         }
     });
 
-    // Закрытие соединения
+    /**
+     *  - ----- Закрытие соединения  --------
+     */
+
     ws.on('close', () => {
+
+        /**
+         *  ADMIN
+         */
+        if (clients[id].user.isAdmin) {
+            delete clients[id];
+            console.log(`Admin is closed ${id}`);
+            return;
+        }
+
+
+        /**
+         *  CLIENT
+         */
         delete clients[id];
         common.totalPeople -= 1;
         sendEveryone({
             totalPeople: common.totalPeople,
         });
-        console.log(`Client is closed ${id}`)
+        console.log(`Client is closed ${id}`);
     })
 });
