@@ -20,13 +20,28 @@ export const reducer = (
                 ...payload,
             };
         case 'CHOOSE_CARD':
+            const {
+                stackName,
+                value,
+            } = payload;
+            if (state?.user?.votes && state?.user?.votes[stackName] === value) {
+                const newVotes = { ...state.user.votes };
+                delete newVotes[stackName];
+                return {
+                    ...state,
+                    user: {
+                        ...state.user,
+                        votes: newVotes,
+                    },
+                }
+            }
             return {
                 ...state,
                 user: {
                     ...state.user,
                     votes: {
                         ...state.user.votes,
-                        [payload.stackName]: payload.value,
+                        [stackName]: value,
                     }
                 },
             };
