@@ -10,3 +10,9 @@
 .app {
    padding: 40px;
 }
+
+@media screen and (max-width: 500px) {
+  .app {
+    padding: 10px;
+  }
+}

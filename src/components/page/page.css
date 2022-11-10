@@ -23,3 +23,13 @@
     line-height: 42px;
     margin-bottom: 16px;
 }
+
+@media screen and (max-width: 1196px) {
+    .page {
+        grid-template-columns: auto;
+    }
+
+    .page__stacks {
+        grid-template-columns: auto;
+    }
+}
