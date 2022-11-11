@@ -1,7 +1,23 @@
+import { TYPES } from './actions';
+
 const initialState = {
-    totalPeople: 0,
-    voitedPeople: 0,
-    result: {},
+    isOpen: false,
+    all: 0,
+    ready: 0,
+    sumByStack: {
+        Front: 0,
+        Middle: 0,
+        Pega: 0,
+        Test: 0,
+        Analyst: 0,
+    },
+    result: {
+        Front: {},
+        Middle: {},
+        Pega: {},
+        Test: {},
+        Analyst: {},
+    },
     user: {
         isAdmin: false,
         isReady: false,
@@ -14,12 +30,12 @@ export const reducer = (
     { type, payload },
 ) => {
     switch (type) {
-        case 'SET_DATA':
+        case TYPES.SET_DATA:
             return {
                 ...state,
                 ...payload,
             };
-        case 'CHOOSE_CARD':
+        case TYPES.CHOOSE_CARD:
             const {
                 stackName,
                 value,
@@ -45,7 +61,7 @@ export const reducer = (
                     }
                 },
             };
-        case 'SET_READY':
+        case TYPES.SET_READY:
             return {
                 ...state,
                 user: {

@@ -10,6 +10,7 @@ export const Card = (props) => {
         isChosen,
         stackName,
         onReject,
+        isOpen,
     } = props;
 
     const {
@@ -19,6 +20,9 @@ export const Card = (props) => {
     } = useSelector(state => state);
 
     const handleClick = async () => {
+        if (isOpen) {
+            return;
+        }
         if (onReject) {
             await onReject();
         }

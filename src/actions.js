@@ -17,8 +17,8 @@ export const setReady = (payload) => ({
     payload,
 });
 
-// export const fetchData = () => async (dispatch, getState) => {
-//
-//
-//     // dispatch(setData(data));
-// };
+export const TYPES = {
+    SET_DATA,
+    CHOOSE_CARD,
+    SET_READY,
+};

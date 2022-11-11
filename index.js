@@ -17,19 +17,139 @@ const server = express()
 
 const wss = new WebSocket.Server({ server: server });
 
-const clients = {};
 
-const common = {
-    totalPeople: 0,
-    voitedPeople: 0,
-    result: {
-        'Front': {},
-        'Middle': {},
-        'Pega': {},
-        'Test': {},
-        'Analyst': {},
+// CLIENTS[clientId] = {
+//     isAdmin: false,
+//     isReady: false,
+//     votes: {},
+// };
+const CLIENTS = {};
+
+const INITIAL_STATE = {
+    isOpen: false,
+    all: 0,
+    ready: 0,
+    sumByStack: {
+        Front: 0,
+        Middle: 0,
+        Pega: 0,
+        Test: 0,
+        Analyst: 0,
     },
-}
+    result: {
+        Front: {},
+        Middle: {},
+        Pega: {},
+        Test: {},
+        Analyst: {},
+    },
+};
+
+/**
+ *
+ * Возращает общие данные для фронта
+ */
+const getCurrentState = () => {
+    const sumByStack = {
+        Front: 0,
+        Middle: 0,
+        Pega: 0,
+        Test: 0,
+        Analyst: 0,
+    };
+
+    const result = {
+        Front: {},
+        Middle: {},
+        Pega: {},
+        Test: {},
+        Analyst: {},
+    };
+
+    /**
+     *  Считаем кол-во всех и выбравших значение юзеров
+     */
+    const { all, ready } = Object.keys(CLIENTS).reduce((acc, clientId) => {
+        if (CLIENTS[clientId].isAdmin) {
+            return acc;
+        }
+
+        if (CLIENTS[clientId].isReady) {
+            acc.ready += 1;
+        }
+        acc.all += 1;
+
+        /**
+         *  Считаем голоса
+         */
+        const votes = CLIENTS[clientId].votes;
+        Object.keys(votes).forEach((stack) => {
+            /**
+             * Общее кол-во по каждому стеку
+             */
+            sumByStack[stack] += 1;
+            /**
+             * Если результаты открыты, считаем подробно
+             */
+            if (INITIAL_STATE.isOpen) {
+                if (result[stack][votes[stack]]) {
+                    result[stack][votes[stack]] += 1;
+                } else {
+                    result[stack][votes[stack]] = 1;
+                }
+            }
+        });
+
+        return acc;
+    }, { all: 0, ready: 0 });
+
+    return {
+        isOpen: INITIAL_STATE.isOpen,
+        all,
+        ready,
+        sumByStack,
+        result,
+    };
+};
+
+const addUser = (id, isAdmin = false) => {
+    CLIENTS[id] = {
+        isAdmin,
+        isReady: false,
+        votes: {},
+    };
+};
+
+const setUserReady = (id, votes) => {
+    CLIENTS[id] = {
+        isAdmin: false,
+        isReady: true,
+        votes,
+    };
+};
+
+const clearUsers = () => {
+    Object.keys(CLIENTS).forEach((clientId) => {
+        CLIENTS[clientId].isReady = false;
+        CLIENTS[clientId].votes = {};
+    });
+};
+
+const rejectVote = (id) => {
+    CLIENTS[id] = {
+        isAdmin: false,
+        isReady: false,
+        votes: {},
+    };
+};
+
+const getUser = (id) => ({
+    user: CLIENTS[id],
+});
+
+const deleteUser = (id) => {
+    delete CLIENTS[id];
+};
 
 wss.on('connection', function connection(ws) {
     function sendEveryone(message) {
@@ -40,26 +160,11 @@ wss.on('connection', function connection(ws) {
         });
     }
 
+    function sendToThisUser(message) {
+        ws.send(JSON.stringify(message));
+    }
+
     const id = uuid();
-
-    // Увеличиваем число подключаемых людей
-    common.totalPeople += 1;
-    clients[id] = {
-        ws,
-        user: {
-            isAdmin: false,
-            isReady: false,
-            votes: {},
-        },
-    };
-
-    ws.send(JSON.stringify({
-        user: clients[id].user,
-    }));
-    sendEveryone({
-        totalPeople: common.totalPeople,
-        voitedPeople: common.voitedPeople,
-    });
 
     console.log(`New client ${id}`);
 
@@ -68,98 +173,49 @@ wss.on('connection', function connection(ws) {
         const { type, data } = JSON.parse(rawMessage);
         switch (type) {
             /**
-             *  КЛИК ПО "Я ОЦЕНИЛ"
-             */
-            case 'ready':
-                // Увеличиваем количество проголосовавших
-                common.voitedPeople += 1;
-                sendEveryone({
-                    voitedPeople: common.voitedPeople,
-                });
-                clients[id].user.votes = data;
-                clients[id].user.isReady = true;
-                // Object.keys(data).forEach((stack) => {
-                //     if (common.result[stack][data[stack]]) {
-                //         common.result[stack][data[stack]] += 1;
-                //     } else {
-                //         common.result[stack][data[stack]] = 1;
-                //     }
-                // });
-                break;
-
-            /**
              *  ПОДКЛЮЧЕНИЕ - ДЛЯ ОПРЕДЕЛЕНИЯ АДМИНА
              */
             case 'onopen':
-                if (data.pathname === '/admin') {
-                    clients[id].user.isAdmin = true;
-                    common.totalPeople -= 1;
-                    ws.send(JSON.stringify({
-                        user: {
-                            isAdmin: true,
-                            isReady: false,
-                            votes: {},
-                        }
-                    }));
-                    sendEveryone({
-                        totalPeople: common.totalPeople,
-                    });
-                }
+                addUser(id, data.pathname === '/admin');
+                sendToThisUser(getUser(id));
+                sendEveryone(getCurrentState());
+                break;
+
+
+            /**
+             *  КЛИК ПО "Я ОЦЕНИЛ"
+             */
+            case 'ready':
+                setUserReady(id, data);
+                sendEveryone(getCurrentState());
                 break;
 
             /**
              *  ВСКРЫТИЕ
              */
             case 'open':
-                Object.keys(clients).forEach((id) => {
-                    if (!clients[id].user.isAdmin) {
-                        const votes = clients[id].user.votes;
-                        Object.keys(votes).forEach((stack) => {
-                            if (common.result[stack][votes[stack]]) {
-                                common.result[stack][votes[stack]] += 1;
-                            } else {
-                                common.result[stack][votes[stack]] = 1;
-                            }
-                        });
-                    }
-                });
-                sendEveryone(common);
+                INITIAL_STATE.isOpen = true;
+                sendEveryone(getCurrentState());
                 break;
 
             /**
              *  ПЕРЕЗАПУСК
              */
             case 'reload':
-                common.voitedPeople = 0;
-                common.result = {
-                    'Front': {},
-                    'Middle': {},
-                    'Pega': {},
-                    'Test': {},
-                    'Analyst': {},
-                };
-                const message = {
-                    ...common,
-                    user: {
-                        isAdmin: false,
-                        isReady: false,
-                        votes: {},
-                    },
-                };
+                INITIAL_STATE.isOpen = false;
+                clearUsers();
+                const common = getCurrentState();
+
                 wss.clients.forEach(function each(client) {
                     if (client.readyState === WebSocket.OPEN) {
-                        if (client !== ws) {
-                            client.send(JSON.stringify(message));
-                        } else {
-                            client.send(JSON.stringify({
-                                ...common,
-                                user: {
-                                    isAdmin: true,
-                                    isReady: false,
-                                    votes: {},
-                                },
-                            }));
-                        }
+                        client.send(JSON.stringify({
+                            ...common,
+                            user: {
+                                isAdmin: client === ws,
+                                isReady: false,
+                                votes: {},
+                            },
+                        }));
                     }
                 });
                 break;
@@ -168,11 +224,8 @@ wss.on('connection', function connection(ws) {
              *  ОТМЕНА ГОЛОСА
              */
             case 'reject':
-                common.voitedPeople -= 1;
-                sendEveryone({
-                    voitedPeople: common.voitedPeople,
-                });
-                clients[id].user.votes = {};
+                rejectVote(id);
+                sendEveryone(getCurrentState());
                 break;
             default:
                 break;
@@ -184,29 +237,11 @@ wss.on('connection', function connection(ws) {
      */
 
     ws.on('close', () => {
+        console.log(`Client started to close ${id}`);
 
-        /**
-         *  ADMIN
-         */
-        if (clients[id].user.isAdmin) {
-            delete clients[id];
-            console.log(`Admin is closed ${id}`);
-            return;
-        }
+        deleteUser(id);
+        sendEveryone(getCurrentState());
 
-
-        /**
-         *  CLIENT
-         */
-        common.totalPeople -= 1;
-        if (clients[id].user.isReady) {
-            common.voitedPeople -= 1;
-        }
-        delete clients[id];
-        sendEveryone({
-            totalPeople: common.totalPeople,
-            voitedPeople: common.voitedPeople,
-        });
         console.log(`Client is closed ${id}`);
     })
 });

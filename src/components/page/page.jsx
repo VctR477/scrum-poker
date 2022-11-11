@@ -10,19 +10,19 @@ import {
 import './page.css';
 
 // TODO
-// 1. Менять цифры рядом со стеками сразу после нажатия "Я оценил"
 // 2. Сохранять данные в случае переподключения юзера (перезагрузка страницы)
 
 export const Page = () => {
     const dispatch = useDispatch();
     const socket = useRef();
-    const [isOpen, setIsOpen] = useState(false);
 
     const data = useSelector(state => state);
     const {
-        totalPeople,
-        voitedPeople,
-        result = {},
+        isOpen,
+        all,
+        ready,
+        sumByStack,
+        result,
         user: {
             isAdmin,
             isReady,
@@ -69,7 +69,6 @@ export const Page = () => {
             type: 'open',
         };
         socket.current.send(JSON.stringify(message));
-        setIsOpen(true);
     };
 
     const handleReload = async () => {
@@ -77,7 +76,6 @@ export const Page = () => {
             type: 'reload',
         };
         socket.current.send(JSON.stringify(message));
-        setIsOpen(false);
     };
 
     const handleReject = async () => {
@@ -102,9 +100,11 @@ export const Page = () => {
                         <StackBox
                             key={ stack }
                             stackName={ stack }
-                            votes={ result[stack] }
+                            resultByStack={ result[stack] }
                             myVotes={ votes }
                             onReject={ isReady ? handleReject : null }
+                            sumByStack={ sumByStack[stack] }
+                            isOpen={ isOpen }
                         />
                     );
                 }) }
@@ -113,20 +113,20 @@ export const Page = () => {
                 <div className="page__controls-header">
                     Проголосовали
                     <br />
-                    { voitedPeople } из { totalPeople }
+                    { ready } из { all }
                 </div>
                 { isAdmin ? (
                     <Button
                         text={ isOpen ? 'Заново' : 'Вскрываемся' }
-                        disabled={ !voitedPeople }
+                        disabled={ isOpen ? false : !ready }
                         onClick={ isOpen ? handleReload: handleOpen }
                         type={ isOpen ? 'repeat' : 'open' }
                     />
                 ) : (
                     <Button
                         text="Я оценил"
-                        disabled={ isReady }
-                        onClick={ handleReady }
+                        disabled={ isReady || isOpen }
+                        onClick={ isOpen ? undefined : handleReady }
                     />
                 ) }
             </div>
