@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { StackBox } from '../stack-box';
-import { Button } from '../button';
+import { StackBox } from './stack-box';
+import { Button } from './button';
 import { STACKS } from '../../constants';
 import {
     setData,

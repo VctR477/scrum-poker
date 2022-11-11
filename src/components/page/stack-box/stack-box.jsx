@@ -1,6 +1,6 @@
 import React from 'react';
-import { CardColumn } from '../card-column';
-import { SCALE } from '../../constants';
+import { CardColumn } from './card-column';
+import { SCALE } from '../../../constants';
 import './stack-box.css';
 
 export const StackBox = (props) => {

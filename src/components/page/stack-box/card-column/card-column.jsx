@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '../card';
+import { Card } from './card';
 import './card-column.css';
 
 export const CardColumn = (props) => {

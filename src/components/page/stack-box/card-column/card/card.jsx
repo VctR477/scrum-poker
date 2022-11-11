@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { chooseCard } from '../../actions';
+import { chooseCard } from '../../../../../actions';
 import './card.css';
 
 export const Card = (props) => {
