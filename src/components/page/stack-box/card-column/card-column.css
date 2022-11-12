@@ -6,7 +6,7 @@
     height: 5px;
     width: var(--card-width);
     border-radius: var(--border-radius);
-    background: var(--card-light);
+    background: var(--card-dark);
 }
 
 .card-column__voice + .card-column__voice {

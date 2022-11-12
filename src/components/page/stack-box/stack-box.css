@@ -13,3 +13,8 @@
     width: 392px;
     min-height: 154px;
 }
+
+.stack-box__count {
+    color: darkgray;
+    cursor: default;
+}

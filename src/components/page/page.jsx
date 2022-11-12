@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { StackBox } from './stack-box';
 import { Button } from './button';
@@ -49,6 +49,8 @@ export const Page = () => {
         }
         socket.current.onclose= (e) => {
             console.log('Socket закрыт', e);
+            console.log('--- Пробую повторное подключение ---');
+            connect();
         }
         socket.current.onerror = (e) => {
             console.log('Socket произошла ошибка', e);
@@ -125,7 +127,7 @@ export const Page = () => {
                 ) : (
                     <Button
                         text="Я оценил"
-                        disabled={ isReady || isOpen }
+                        disabled={ isReady || isOpen || (Object.keys(votes).length === 0) }
                         onClick={ isOpen ? undefined : handleReady }
                     />
                 ) }

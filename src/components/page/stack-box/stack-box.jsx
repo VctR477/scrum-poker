@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactTooltip from "react-tooltip";
 import { CardColumn } from './card-column';
 import { SCALE } from '../../../constants';
 import './stack-box.css';
@@ -20,8 +21,15 @@ export const StackBox = (props) => {
 
     return (
         <div className="stack-box">
+            <ReactTooltip place="top" type="success" effect="float"/>
             <div className="stack-box__title">
-                { stackName }, { sumByStack }
+                { stackName }
+                <span
+                    className="stack-box__count"
+                    data-tip={ `Кол-во сотрудников оценивших ${stackName}: ${sumByStack}` }
+                >
+                    , { sumByStack }
+                </span>
             </div>
             <div className="cards-box">
                 { SCALE.map((item) => (
