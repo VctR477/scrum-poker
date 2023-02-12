@@ -12,6 +12,8 @@ import './page.css';
 // TODO
 // 2. Сохранять данные в случае переподключения юзера (перезагрузка страницы)
 
+const PAGE_NAME = 'scrum';
+
 export const Page = () => {
     const dispatch = useDispatch();
     const socket = useRef();
@@ -30,7 +32,7 @@ export const Page = () => {
         },
     } = data;
 
-    const connect = () => {
+    const handleConnect = () => {
         const host = window.location.origin.replace(/^http/, 'ws');
         socket.current = new WebSocket(host);
 
@@ -38,6 +40,7 @@ export const Page = () => {
             console.log('Socket открыт');
             const { pathname } = window.location;
             const message = {
+                page: PAGE_NAME,
                 type: 'onopen',
                 data: { pathname },
             };
@@ -45,12 +48,14 @@ export const Page = () => {
         };
         socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data)
-            dispatch(setDataAC(message));
+            if (message.page === PAGE_NAME) {
+                dispatch(setDataAC(message));
+            }
         }
         socket.current.onclose= (e) => {
             console.log('Socket закрыт', e);
             console.log('--- Пробую повторное подключение ---');
-            connect();
+            handleConnect();
         }
         socket.current.onerror = (e) => {
             console.log('Socket произошла ошибка', e);
@@ -59,6 +64,7 @@ export const Page = () => {
 
     const handleReady = async () => {
         const message = {
+            page: PAGE_NAME,
             type: 'ready',
             data: votes,
         };
@@ -68,6 +74,7 @@ export const Page = () => {
 
     const handleOpen = async () => {
         const message = {
+            page: PAGE_NAME,
             type: 'open',
         };
         socket.current.send(JSON.stringify(message));
@@ -75,6 +82,7 @@ export const Page = () => {
 
     const handleReload = async () => {
         const message = {
+            page: PAGE_NAME,
             type: 'reload',
         };
         socket.current.send(JSON.stringify(message));
@@ -82,6 +90,7 @@ export const Page = () => {
 
     const handleReject = async () => {
         const message = {
+            page: PAGE_NAME,
             type: 'reject',
         };
         dispatch(setReadyAC(false));
@@ -90,9 +99,9 @@ export const Page = () => {
 
     useEffect(() => {
         if (!socket || !socket.current) {
-            connect();
+            handleConnect();
         }
-    }, [connect, socket]);
+    }, [handleConnect, socket]);
 
     return (
         <div className="page">

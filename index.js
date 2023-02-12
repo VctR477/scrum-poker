@@ -10,10 +10,23 @@ const server = express()
     .get('/', (req, res) => {
         res.sendFile(__dirname + '/build/index.html');
     })
+    .get('/admin', (req, res) => {
+        res.sendFile(__dirname + '/build/index.html');
+    })
+    .get('/satisfaction', (req, res) => {
+        res.sendFile(__dirname + '/build/index.html');
+    })
+    .get('/satisfaction/admin', (req, res) => {
+        res.sendFile(__dirname + '/build/index.html');
+    })
     .listen(PORT, () => console.log(`START --- Listening on ${ PORT }`));
 
 const wss = new WebSocket.Server({ server: server });
 
+const PAGES = {
+    SCRUM: 'scrum',
+    SATISFACTION: 'satisfaction',
+};
 
 // CLIENTS[clientId] = {
 //     isAdmin: false,
@@ -22,23 +35,49 @@ const wss = new WebSocket.Server({ server: server });
 // };
 const CLIENTS = {};
 
+// USERS[clientId] = {
+//     isAdmin: false,
+//     isReady: false,
+//     votes: null | '1' | '2' ...
+// };
+const USERS = {};
+
 const INITIAL_STATE = {
-    isOpen: false,
-    all: 0,
-    ready: 0,
-    sumByStack: {
-        Front: 0,
-        Middle: 0,
-        Pega: 0,
-        Test: 0,
-        Analyst: 0,
+    satisfaction: {
+        isOpen: false,
+        all: 0,
+        ready: 0,
+        result: {
+            '1': 0,
+            '2': 0,
+            '3': 0,
+            '4': 0,
+            '5': 0,
+            '6': 0,
+            '7': 0,
+            '8': 0,
+            '9': 0,
+            '10': 0,
+        },
     },
-    result: {
-        Front: {},
-        Middle: {},
-        Pega: {},
-        Test: {},
-        Analyst: {},
+    scrum: {
+        isOpen: false,
+        all: 0,
+        ready: 0,
+        sumByStack: {
+            Front: 0,
+            Middle: 0,
+            Pega: 0,
+            Test: 0,
+            Analyst: 0,
+        },
+        result: {
+            Front: {},
+            Middle: {},
+            Pega: {},
+            Test: {},
+            Analyst: {},
+        },
     },
 };
 
@@ -46,7 +85,8 @@ const INITIAL_STATE = {
  *
  * Возращает общие данные для фронта
  */
-const getCurrentState = () => {
+
+const getDataByClients = (page) => {
     const sumByStack = {
         Front: 0,
         Middle: 0,
@@ -88,7 +128,7 @@ const getCurrentState = () => {
             /**
              * Если результаты открыты, считаем подробно
              */
-            if (INITIAL_STATE.isOpen) {
+            if (INITIAL_STATE[page].isOpen) {
                 if (result[stack][votes[stack]]) {
                     result[stack][votes[stack]] += 1;
                 } else {
@@ -101,7 +141,7 @@ const getCurrentState = () => {
     }, { all: 0, ready: 0 });
 
     return {
-        isOpen: INITIAL_STATE.isOpen,
+        isOpen: INITIAL_STATE[page].isOpen,
         all,
         ready,
         sumByStack,
@@ -109,56 +149,184 @@ const getCurrentState = () => {
     };
 };
 
-const addUser = (id, isAdmin = false) => {
-    CLIENTS[id] = {
-        isAdmin,
-        isReady: false,
-        votes: {},
+const getDataByUsers = (page) => {
+    const result = {
+        '1': 0,
+        '2': 0,
+        '3': 0,
+        '4': 0,
+        '5': 0,
+        '6': 0,
+        '7': 0,
+        '8': 0,
+        '9': 0,
+        '10': 0,
+    };
+
+    const { all, ready } = Object.keys(USERS).reduce((acc, userId ) => {
+        if (USERS[userId].isAdmin) {
+            return acc;
+        }
+
+        if (USERS[userId].isReady) {
+            acc.ready += 1;
+        }
+        acc.all += 1;
+        if (USERS[userId].vote) {
+            result[USERS[userId].vote] += 1;
+        }
+
+        return acc;
+    }, { all: 0, ready: 0 });
+
+    return {
+        isOpen: INITIAL_STATE[page].isOpen,
+        all,
+        ready,
+        result,
     };
 };
-
-const setUserReady = (id, votes) => {
-    CLIENTS[id] = {
-        isAdmin: false,
-        isReady: true,
-        votes,
-    };
+const getCurrentState = (page) => {
+    switch (page) {
+        case PAGES.SCRUM: {
+            return getDataByClients(page);
+        }
+        case PAGES.SATISFACTION: {
+            return getDataByUsers(page);
+        }
+        default:
+            throw Error(`Вызывали getCurrentState с неправильным page: ${page}`);
+    }
 };
 
-const clearUsers = () => {
-    Object.keys(CLIENTS).forEach((clientId) => {
-        CLIENTS[clientId].isReady = false;
-        CLIENTS[clientId].votes = {};
-    });
+const PAGES_BY_ID = {};
+
+const addUser = (id, isAdmin = false, page) => {
+    PAGES_BY_ID[id] = page;
+    switch (page) {
+        case PAGES.SCRUM: {
+            CLIENTS[id] = {
+                isAdmin,
+                isReady: false,
+                votes: {},
+            };
+            return {
+                user: CLIENTS[id],
+            };
+        }
+        case PAGES.SATISFACTION: {
+            USERS[id] = {
+                isAdmin,
+                isReady: false,
+                vote: null,
+            };
+            return {
+                user: USERS[id],
+            };
+        }
+        default:
+            break;
+    }
 };
 
-const rejectVote = (id) => {
-    CLIENTS[id] = {
-        isAdmin: false,
-        isReady: false,
-        votes: {},
-    };
+const setUserReady = (id, votes, page) => {
+    switch (page) {
+        case PAGES.SCRUM: {
+            CLIENTS[id] = {
+                isAdmin: false,
+                isReady: true,
+                votes,
+            };
+            return {
+                user: CLIENTS[id],
+            };
+        }
+        case PAGES.SATISFACTION: {
+            USERS[id] = {
+                isAdmin: false,
+                isReady: true,
+                vote: votes,
+            };
+            return {
+                user: USERS[id],
+            };
+        }
+        default:
+            break;
+    }
 };
 
-const getUser = (id) => ({
-    user: CLIENTS[id],
-});
+const clearUsers = (page) => {
+    switch (page) {
+        case PAGES.SCRUM: {
+            Object.keys(CLIENTS).forEach((clientId) => {
+                CLIENTS[clientId].isReady = false;
+                CLIENTS[clientId].votes = {};
+            });
+        }
+            break;
+        case PAGES.SATISFACTION: {
+            Object.keys(USERS).forEach((clientId) => {
+                USERS[clientId].isReady = false;
+                USERS[clientId].vote = null;
+            });
+        }
+            break;
+        default:
+            break;
+    }
+};
 
-const deleteUser = (id) => {
-    delete CLIENTS[id];
+const rejectVote = (id, page) => {
+    switch (page) {
+        case PAGES.SCRUM: {
+            CLIENTS[id] = {
+                isAdmin: false,
+                isReady: false,
+                votes: {},
+            };
+        }
+            break;
+        case PAGES.SATISFACTION: {
+            USERS[id] = {
+                isAdmin: false,
+                isReady: false,
+                vote: null,
+            };
+        }
+            break;
+        default:
+            break;
+    }
+};
+
+const deleteUser = (id, page) => {
+    delete PAGES_BY_ID[id];
+    switch (page) {
+        case PAGES.SCRUM: {
+            delete CLIENTS[id];
+        }
+            break;
+        case PAGES.SATISFACTION: {
+            delete USERS[id];
+        }
+            break;
+        default:
+            break;
+    }
 };
 
 wss.on('connection', function connection(ws) {
-    function sendEveryone(message) {
+    function sendEveryone(message, page) {
         wss.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(message));
+                client.send(JSON.stringify({ ...message, page }));
             }
         });
     }
 
-    function sendToThisUser(message) {
-        ws.send(JSON.stringify(message));
+    function sendToThisUser(message, page) {
+        ws.send(JSON.stringify({ ...message, page }));
     }
 
     const id = uuid();
@@ -167,15 +335,16 @@ wss.on('connection', function connection(ws) {
 
     // Сообщение от клиента
     ws.on('message', function fromClient(rawMessage) {
-        const { type, data } = JSON.parse(rawMessage);
+        const { type, data, page } = JSON.parse(rawMessage);
         switch (type) {
             /**
              *  ПОДКЛЮЧЕНИЕ - ДЛЯ ОПРЕДЕЛЕНИЯ АДМИНА
              */
             case 'onopen':
-                addUser(id, data.pathname === '/admin');
-                sendToThisUser(getUser(id));
-                sendEveryone(getCurrentState());
+                const isAdmin = data.pathname === '/admin' || data.pathname === '/satisfaction/admin';
+                const user = addUser(id, isAdmin, page);
+                sendToThisUser(user, page);
+                sendEveryone(getCurrentState(page), page);
                 break;
 
 
@@ -183,25 +352,27 @@ wss.on('connection', function connection(ws) {
              *  КЛИК ПО "Я ОЦЕНИЛ"
              */
             case 'ready':
-                setUserReady(id, data);
-                sendEveryone(getCurrentState());
+                setUserReady(id, data, page);
+                sendEveryone(getCurrentState(page), page);
                 break;
 
             /**
              *  ВСКРЫТИЕ
              */
             case 'open':
-                INITIAL_STATE.isOpen = true;
-                sendEveryone(getCurrentState());
+                INITIAL_STATE[page].isOpen = true;
+                sendEveryone(getCurrentState(page), page);
                 break;
 
             /**
              *  ПЕРЕЗАПУСК
              */
             case 'reload':
-                INITIAL_STATE.isOpen = false;
-                clearUsers();
-                const common = getCurrentState();
+                INITIAL_STATE[page].isOpen = false;
+                clearUsers(page);
+                const common = getCurrentState(page);
+
+                const votes = page === PAGES.SCRUM ? { votes: {} } : { vote: null };
 
                 wss.clients.forEach(function each(client) {
                     if (client.readyState === WebSocket.OPEN) {
@@ -210,8 +381,9 @@ wss.on('connection', function connection(ws) {
                             user: {
                                 isAdmin: client === ws,
                                 isReady: false,
-                                votes: {},
+                                ...votes,
                             },
+                            page,
                         }));
                     }
                 });
@@ -221,8 +393,8 @@ wss.on('connection', function connection(ws) {
              *  ОТМЕНА ГОЛОСА
              */
             case 'reject':
-                rejectVote(id);
-                sendEveryone(getCurrentState());
+                rejectVote(id, page);
+                sendEveryone(getCurrentState(page), page);
                 break;
             default:
                 break;
@@ -236,8 +408,9 @@ wss.on('connection', function connection(ws) {
     ws.on('close', () => {
         console.log(`Client started to close ${id}`);
 
-        deleteUser(id);
-        sendEveryone(getCurrentState());
+        const page = PAGES_BY_ID[id];
+        deleteUser(id, page);
+        sendEveryone(getCurrentState(page), page);
 
         console.log(`Client is closed ${id}`);
     })

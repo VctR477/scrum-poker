@@ -8,6 +8,13 @@ import {
 } from '../../actions/satisfaction-actins';
 import './satisfaction.css';
 
+// Поправить логику расчета на сервере
+// добавить расчет средней оценки
+// добавить цвет для карточек
+// Добавить ссылки на страницы
+
+const PAGE_NAME = 'satisfaction';
+
 export const Satisfaction = () => {
     const dispatch = useDispatch();
     const socket = useRef();
@@ -25,7 +32,7 @@ export const Satisfaction = () => {
         },
     } = data;
 
-    const connect = () => {
+    const handleConnect = () => {
         const host = window.location.origin.replace(/^http/, 'ws');
         socket.current = new WebSocket(host);
 
@@ -33,6 +40,7 @@ export const Satisfaction = () => {
             console.log('Socket открыт');
             const { pathname } = window.location;
             const message = {
+                page: PAGE_NAME,
                 type: 'onopen',
                 data: { pathname },
             };
@@ -40,12 +48,14 @@ export const Satisfaction = () => {
         };
         socket.current.onmessage = (event) => {
             const message = JSON.parse(event.data)
-            dispatch(setDataAC(message));
+            if (message.page === PAGE_NAME) {
+                dispatch(setDataAC(message));
+            }
         }
         socket.current.onclose= (e) => {
             console.log('Socket закрыт', e);
             console.log('--- Пробую повторное подключение ---');
-            connect();
+            handleConnect();
         }
         socket.current.onerror = (e) => {
             console.log('Socket произошла ошибка', e);
@@ -54,6 +64,7 @@ export const Satisfaction = () => {
 
     const handleReady = async () => {
         const message = {
+            page: PAGE_NAME,
             type: 'ready',
             data: vote,
         };
@@ -63,6 +74,7 @@ export const Satisfaction = () => {
 
     const handleOpen = async () => {
         const message = {
+            page: PAGE_NAME,
             type: 'open',
         };
         socket.current.send(JSON.stringify(message));
@@ -71,6 +83,7 @@ export const Satisfaction = () => {
     const handleReload = async () => {
         const message = {
             type: 'reload',
+            page: PAGE_NAME,
         };
         socket.current.send(JSON.stringify(message));
     };
@@ -78,6 +91,7 @@ export const Satisfaction = () => {
     const handleReject = async () => {
         const message = {
             type: 'reject',
+            page: PAGE_NAME,
         };
         dispatch(setReadyAC(false));
         socket.current.send(JSON.stringify(message));
@@ -85,15 +99,15 @@ export const Satisfaction = () => {
 
     useEffect(() => {
         if (!socket || !socket.current) {
-            connect();
+            handleConnect();
         }
-    }, [connect, socket]);
+    }, [handleConnect, socket]);
 
     return (
         <div className="page">
             <div className="page__stacks">
                 <Line
-                    result={ result }
+                    result={ isOpen ? result : {} }
                     vote={ vote }
                     onReject={ isReady ? handleReject : null }
                     ready={ ready }

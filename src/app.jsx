@@ -23,6 +23,10 @@ const router = createBrowserRouter([
     {
         path: '/satisfaction',
         element: <Satisfaction />,
+    },
+    {
+        path: '/satisfaction/admin',
+        element: <Satisfaction />,
     }
 ]);
 
