@@ -8,8 +8,6 @@ import {
 } from '../../actions/satisfaction-actins';
 import './satisfaction.css';
 
-// Добавить ссылки на страницы
-
 const PAGE_NAME = 'satisfaction';
 
 export const Satisfaction = () => {
@@ -102,37 +100,45 @@ export const Satisfaction = () => {
     }, [handleConnect, socket]);
 
     return (
-        <div className="page">
-            <div className="page__stacks page__satisfaction">
-                <Line
-                    result={ isOpen ? result : {} }
-                    vote={ vote }
-                    onReject={ isReady ? handleReject : null }
-                    ready={ ready }
-                    isOpen={ isOpen }
-                    average={ average }
-                />
-            </div>
-            <div className="page__controls">
-                <div className="page__controls-header">
-                    Проголосовали
-                    <br />
-                    { ready } из { all }
+        <div>
+            <a
+                className="link"
+                href="/"
+            >
+                -> Оценка задачи
+            </a>
+            <div className="page">
+                <div className="page__stacks page__satisfaction">
+                    <Line
+                        result={ isOpen ? result : {} }
+                        vote={ vote }
+                        onReject={ isReady ? handleReject : null }
+                        ready={ ready }
+                        isOpen={ isOpen }
+                        average={ average }
+                    />
                 </div>
-                { isAdmin ? (
-                    <Button
-                        text={ isOpen ? 'Заново' : 'Вскрываемся' }
-                        disabled={ isOpen ? false : !ready }
-                        onClick={ isOpen ? handleReload: handleOpen }
-                        type={ isOpen ? 'repeat' : 'open' }
-                    />
-                ) : (
-                    <Button
-                        text="Я оценил"
-                        disabled={ isReady || isOpen || !vote }
-                        onClick={ isOpen ? undefined : handleReady }
-                    />
-                ) }
+                <div className="page__controls">
+                    <div className="page__controls-header">
+                        Проголосовали
+                        <br />
+                        { ready } из { all }
+                    </div>
+                    { isAdmin ? (
+                        <Button
+                            text={ isOpen ? 'Заново' : 'Вскрываемся' }
+                            disabled={ isOpen ? false : !ready }
+                            onClick={ isOpen ? handleReload: handleOpen }
+                            type={ isOpen ? 'repeat' : 'open' }
+                        />
+                    ) : (
+                        <Button
+                            text="Я оценил"
+                            disabled={ isReady || isOpen || !vote }
+                            onClick={ isOpen ? undefined : handleReady }
+                        />
+                    ) }
+                </div>
             </div>
         </div>
     );

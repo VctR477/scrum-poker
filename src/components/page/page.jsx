@@ -104,42 +104,50 @@ export const Page = () => {
     }, [handleConnect, socket]);
 
     return (
-        <div className="page">
-            <div className="page__stacks">
-                { STACKS.map((stack) => {
-                    return (
-                        <StackBox
-                            key={ stack }
-                            stackName={ stack }
-                            resultByStack={ result[stack] }
-                            myVotes={ votes }
-                            onReject={ isReady ? handleReject : null }
-                            sumByStack={ sumByStack[stack] }
-                            isOpen={ isOpen }
-                        />
-                    );
-                }) }
-            </div>
-            <div className="page__controls">
-                <div className="page__controls-header">
-                    Проголосовали
-                    <br />
-                    { ready } из { all }
+        <div>
+            <a
+                className="link"
+                href="/satisfaction"
+            >
+                 -> Оценка спринта
+            </a>
+            <div className="page">
+                <div className="page__stacks">
+                    { STACKS.map((stack) => {
+                        return (
+                            <StackBox
+                                key={ stack }
+                                stackName={ stack }
+                                resultByStack={ result[stack] }
+                                myVotes={ votes }
+                                onReject={ isReady ? handleReject : null }
+                                sumByStack={ sumByStack[stack] }
+                                isOpen={ isOpen }
+                            />
+                        );
+                    }) }
                 </div>
-                { isAdmin ? (
-                    <Button
-                        text={ isOpen ? 'Заново' : 'Вскрываемся' }
-                        disabled={ isOpen ? false : !ready }
-                        onClick={ isOpen ? handleReload: handleOpen }
-                        type={ isOpen ? 'repeat' : 'open' }
-                    />
-                ) : (
-                    <Button
-                        text="Я оценил"
-                        disabled={ isReady || isOpen || (Object.keys(votes).length === 0) }
-                        onClick={ isOpen ? undefined : handleReady }
-                    />
-                ) }
+                <div className="page__controls">
+                    <div className="page__controls-header">
+                        Проголосовали
+                        <br />
+                        { ready } из { all }
+                    </div>
+                    { isAdmin ? (
+                        <Button
+                            text={ isOpen ? 'Заново' : 'Вскрываемся' }
+                            disabled={ isOpen ? false : !ready }
+                            onClick={ isOpen ? handleReload: handleOpen }
+                            type={ isOpen ? 'repeat' : 'open' }
+                        />
+                    ) : (
+                        <Button
+                            text="Я оценил"
+                            disabled={ isReady || isOpen || (Object.keys(votes).length === 0) }
+                            onClick={ isOpen ? undefined : handleReady }
+                        />
+                    ) }
+                </div>
             </div>
         </div>
     );

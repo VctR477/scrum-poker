@@ -14,8 +14,27 @@
    padding: 40px;
 }
 
+.link {
+  display: inline-block;
+  padding: 10px;
+  border: 1px dashed;
+  text-decoration: none;
+  position: relative;
+  top: -20px;
+  left: -20px;
+}
+
+.link:hover {
+  border: 1px solid;
+}
+
 @media screen and (max-width: 500px) {
   .app {
     padding: 10px;
+  }
+
+  .link {
+    top: -5px;
+    left: -5px;
   }
 }
