@@ -1,4 +1,4 @@
-import { TYPES } from './actions';
+import { TYPES } from '../actions/scrum-actions';
 
 const initialState = {
     isOpen: false,
@@ -25,7 +25,7 @@ const initialState = {
     },
 };
 
-export const reducer = (
+const reducer = (
     state = initialState,
     { type, payload },
 ) => {
@@ -73,3 +73,5 @@ export const reducer = (
             return state;
     }
 };
+
+export default reducer;

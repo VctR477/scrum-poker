@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { chooseCardAC } from '../../../../../actions/scrum-actions';
+import { chooseCardAC } from '../../../actions/satisfaction-actins';
 import './card.css';
 
 export const Card = (props) => {
@@ -8,7 +8,6 @@ export const Card = (props) => {
     const {
         value,
         isChosen,
-        stackName,
         onReject,
         isOpen,
     } = props;
@@ -17,7 +16,7 @@ export const Card = (props) => {
         user: {
             isAdmin,
         },
-    } = useSelector(state => state.scrum);
+    } = useSelector(state => state.satisfaction);
 
     const handleClick = async () => {
         if (isOpen) {
@@ -26,10 +25,7 @@ export const Card = (props) => {
         if (onReject) {
             await onReject();
         }
-        dispatch(chooseCardAC({
-            stackName,
-            value,
-        }));
+        dispatch(chooseCardAC(value));
     };
 
     return (

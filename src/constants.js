@@ -17,3 +17,16 @@ export const STACKS = [
     'Test',
     'Analyst',
 ];
+
+export const SATISFACTION_SCALE = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+];

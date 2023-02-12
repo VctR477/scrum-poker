@@ -1,0 +1,35 @@
+.page {
+    display: grid;
+    grid-template-columns: 850px 246px;
+    justify-content: center;
+    column-gap: 100px;
+}
+
+.page__stacks {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    column-gap: 60px;
+}
+
+.page__controls {
+    width: 246px;
+    height: 160px;
+}
+
+.page__controls-header {
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 42px;
+    margin-bottom: 16px;
+}
+
+@media screen and (max-width: 1196px) {
+    .page {
+        grid-template-columns: auto;
+    }
+
+    .page__stacks {
+        grid-template-columns: auto;
+    }
+}

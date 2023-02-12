@@ -1,32 +1,27 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { StackBox } from './stack-box';
+import { Line } from './line';
 import { Button } from './button';
-import { STACKS } from '../../constants';
 import {
     setDataAC,
     setReadyAC,
-} from '../../actions/scrum-actions';
-import './page.css';
+} from '../../actions/satisfaction-actins';
+import './satisfaction.css';
 
-// TODO
-// 2. Сохранять данные в случае переподключения юзера (перезагрузка страницы)
-
-export const Page = () => {
+export const Satisfaction = () => {
     const dispatch = useDispatch();
     const socket = useRef();
 
-    const data = useSelector(state => state.scrum);
+    const data = useSelector(state => state.satisfaction);
     const {
         isOpen,
         all,
         ready,
-        sumByStack,
         result,
         user: {
             isAdmin,
             isReady,
-            votes,
+            vote,
         },
     } = data;
 
@@ -60,7 +55,7 @@ export const Page = () => {
     const handleReady = async () => {
         const message = {
             type: 'ready',
-            data: votes,
+            data: vote,
         };
         dispatch(setReadyAC(true));
         socket.current.send(JSON.stringify(message));
@@ -97,19 +92,13 @@ export const Page = () => {
     return (
         <div className="page">
             <div className="page__stacks">
-                { STACKS.map((stack) => {
-                    return (
-                        <StackBox
-                            key={ stack }
-                            stackName={ stack }
-                            resultByStack={ result[stack] }
-                            myVotes={ votes }
-                            onReject={ isReady ? handleReject : null }
-                            sumByStack={ sumByStack[stack] }
-                            isOpen={ isOpen }
-                        />
-                    );
-                }) }
+                <Line
+                    result={ result }
+                    vote={ vote }
+                    onReject={ isReady ? handleReject : null }
+                    ready={ ready }
+                    isOpen={ isOpen }
+                />
             </div>
             <div className="page__controls">
                 <div className="page__controls-header">
@@ -127,7 +116,7 @@ export const Page = () => {
                 ) : (
                     <Button
                         text="Я оценил"
-                        disabled={ isReady || isOpen || (Object.keys(votes).length === 0) }
+                        disabled={ isReady || isOpen || !vote }
                         onClick={ isOpen ? undefined : handleReady }
                     />
                 ) }

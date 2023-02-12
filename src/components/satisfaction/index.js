@@ -1,0 +1,1 @@
+export { Satisfaction } from './satisfaction';

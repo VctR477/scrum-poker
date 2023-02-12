@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactTooltip from "react-tooltip";
+import ReactTooltip from 'react-tooltip';
 import { CardColumn } from './card-column';
 import { SCALE } from '../../../constants';
 import './stack-box.css';
@@ -13,11 +13,6 @@ export const StackBox = (props) => {
         sumByStack,
         isOpen,
     } = props;
-
-    // const numberOfVoters = votes ? Object.keys(votes).reduce((acc, item) => {
-    //     const sum = acc + votes[item];
-    //     return sum;
-    // }, 0) : 0;
 
     return (
         <div className="stack-box">

@@ -10,9 +10,6 @@ const server = express()
     .get('/', (req, res) => {
         res.sendFile(__dirname + '/build/index.html');
     })
-    .get('/admin', (req, res) => {
-        res.sendFile(__dirname + '/build/index.html');
-    })
     .listen(PORT, () => console.log(`START --- Listening on ${ PORT }`));
 
 const wss = new WebSocket.Server({ server: server });
