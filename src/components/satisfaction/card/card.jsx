@@ -10,6 +10,7 @@ export const Card = (props) => {
         isChosen,
         onReject,
         isOpen,
+        color,
     } = props;
 
     const {
@@ -30,7 +31,7 @@ export const Card = (props) => {
 
     return (
         <div
-            className={ `card${isChosen ? ' card-dark' : ''}${isAdmin ? ' card-admin' : ''}` }
+            className={ `card${isChosen ? ' card-dark' : ''}${isAdmin ? ' card-admin' : ''} ${color ? color : ''}` }
             onClick={ isAdmin ? null : handleClick }
         >
             { value }

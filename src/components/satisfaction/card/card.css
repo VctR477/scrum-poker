@@ -28,3 +28,13 @@
 .card-admin:hover {
     opacity: 1;
 }
+
+.card.attention {
+    background: var(--color-attention);
+}
+.card.negative {
+    background: var(--color-negative);
+}
+.card.positive {
+    background: var(--color-positive);
+}

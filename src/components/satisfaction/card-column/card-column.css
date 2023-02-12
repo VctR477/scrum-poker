@@ -9,6 +9,16 @@
     background: var(--card-dark);
 }
 
+.card-column__voice.attention {
+    background: var(--color-attention);
+}
+.card-column__voice.negative {
+    background: var(--color-negative);
+}
+.card-column__voice.positive {
+    background: var(--color-positive);
+}
+
 .card-column__voice + .card-column__voice {
     margin-top: 4px;
 }

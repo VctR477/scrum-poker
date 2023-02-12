@@ -4,6 +4,23 @@ import { CardColumn } from '../card-column';
 import { SATISFACTION_SCALE } from '../../../constants';
 import './stack-box.css';
 
+const getColor = (value) => {
+    const average = Number(value);
+    if (!average) {
+        return null;
+    }
+
+    if (average < 5) {
+        return 'negative';
+    }
+
+    if (average < 8) {
+        return 'attention';
+    }
+
+    return 'positive';
+};
+
 export const Line = (props) => {
     const {
         ready,
@@ -13,6 +30,8 @@ export const Line = (props) => {
         result,
         average,
     } = props;
+
+    const averageColor = isOpen ? getColor(average) : null;
 
     return (
         <div className="stack-box">
@@ -35,10 +54,11 @@ export const Line = (props) => {
                         amount={ result && result[item] ? result[item] : 0 }
                         onReject={ onReject }
                         isOpen={ isOpen }
+                        color={ isOpen ? getColor(item) : null }
                     />
                 )) }
                 { isOpen && (
-                    <span className="average"> ~ { average }</span>
+                    <span className={ `average ${averageColor ? averageColor : ''}` }> ~ { average }</span>
                 ) }
             </div>
         </div>

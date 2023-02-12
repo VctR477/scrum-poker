@@ -8,9 +8,6 @@ import {
 } from '../../actions/satisfaction-actins';
 import './satisfaction.css';
 
-// Поправить логику расчета на сервере
-// добавить расчет средней оценки
-// добавить цвет для карточек
 // Добавить ссылки на страницы
 
 const PAGE_NAME = 'satisfaction';

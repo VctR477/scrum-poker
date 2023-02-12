@@ -5,6 +5,9 @@
   --card-width: 40px;
   --card-height: 60px;
   --border-radius: 4px;
+  --color-attention: #f0c330;
+  --color-negative: #ff5c5c;
+  --color-positive: #87b965;
 }
 
 .app {
