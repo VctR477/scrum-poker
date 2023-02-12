@@ -12,3 +12,7 @@
 .card-column__voice + .card-column__voice {
     margin-top: 4px;
 }
+
+.card-column__satisfaction + .card-column__satisfaction {
+    margin-left: 10px;
+}

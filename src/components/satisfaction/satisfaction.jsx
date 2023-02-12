@@ -30,6 +30,7 @@ export const Satisfaction = () => {
             isReady,
             vote,
         },
+        average,
     } = data;
 
     const handleConnect = () => {
@@ -105,13 +106,14 @@ export const Satisfaction = () => {
 
     return (
         <div className="page">
-            <div className="page__stacks">
+            <div className="page__stacks page__satisfaction">
                 <Line
                     result={ isOpen ? result : {} }
                     vote={ vote }
                     onReject={ isReady ? handleReject : null }
                     ready={ ready }
                     isOpen={ isOpen }
+                    average={ average }
                 />
             </div>
             <div className="page__controls">

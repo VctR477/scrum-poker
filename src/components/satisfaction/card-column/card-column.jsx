@@ -9,7 +9,7 @@ export const CardColumn = (props) => {
     } = props;
 
     return (
-        <div className="card-column">
+        <div className="card-column card-column__satisfaction">
             <Card { ...other } />
             <div className="card-column__amount">
                 { new Array(amount).fill().map((_, idx) => (

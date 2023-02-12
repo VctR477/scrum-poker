@@ -11,6 +11,7 @@ export const Line = (props) => {
         vote,
         onReject,
         result,
+        average,
     } = props;
 
     return (
@@ -36,6 +37,9 @@ export const Line = (props) => {
                         isOpen={ isOpen }
                     />
                 )) }
+                { isOpen && (
+                    <span className="average"> ~ { average }</span>
+                ) }
             </div>
         </div>
     );

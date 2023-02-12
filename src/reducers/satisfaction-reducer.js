@@ -23,6 +23,7 @@ const initialState = {
         isReady: false,
         vote: null,
     },
+    average: 0,
 };
 
 const reducer = (

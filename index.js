@@ -163,6 +163,8 @@ const getDataByUsers = (page) => {
         '10': 0,
     };
 
+    let sum = 0;
+
     const { all, ready } = Object.keys(USERS).reduce((acc, userId ) => {
         if (USERS[userId].isAdmin) {
             return acc;
@@ -173,17 +175,21 @@ const getDataByUsers = (page) => {
         }
         acc.all += 1;
         if (USERS[userId].vote) {
+            sum = sum + Number(USERS[userId].vote);
             result[USERS[userId].vote] += 1;
         }
 
         return acc;
     }, { all: 0, ready: 0 });
 
+    const isOpen = INITIAL_STATE[page].isOpen;
+
     return {
-        isOpen: INITIAL_STATE[page].isOpen,
+        isOpen,
         all,
         ready,
         result,
+        average: isOpen ? (sum/all).toFixed(2) : 0,
     };
 };
 const getCurrentState = (page) => {

@@ -11,6 +11,10 @@
     column-gap: 60px;
 }
 
+.page__satisfaction {
+    grid-template-columns: repeat(1, auto);
+}
+
 .page__controls {
     width: 246px;
     height: 160px;

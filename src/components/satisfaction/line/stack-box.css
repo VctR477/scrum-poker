@@ -9,13 +9,19 @@
 .line {
     display: flex;
     align-items: flex-start;
-    justify-content: space-between;
-    width: 436px;
-    min-height: 154px;
+    justify-content: center;
     margin: 20px auto;
 }
 
 .stack-box__count {
     color: darkgray;
     cursor: default;
+}
+
+.average {
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 60px;
+    color: var(--text-color);
+    padding-left: 20px;
 }
