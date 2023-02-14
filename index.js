@@ -201,7 +201,7 @@ const getCurrentState = (page) => {
             return getDataByUsers(page);
         }
         default:
-            throw Error(`Вызывали getCurrentState с неправильным page: ${page}`);
+            return getDataByClients(page);
     }
 };
 
@@ -342,6 +342,10 @@ wss.on('connection', function connection(ws) {
     // Сообщение от клиента
     ws.on('message', function fromClient(rawMessage) {
         const { type, data, page } = JSON.parse(rawMessage);
+
+        if (!page) {
+            return;
+        }
         switch (type) {
             /**
              *  ПОДКЛЮЧЕНИЕ - ДЛЯ ОПРЕДЕЛЕНИЯ АДМИНА
