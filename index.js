@@ -189,7 +189,7 @@ const getDataByUsers = (page) => {
         all,
         ready,
         result,
-        average: isOpen ? (sum/all).toFixed(2) : 0,
+        average: isOpen ? (sum/ready).toFixed(2) : 0,
     };
 };
 const getCurrentState = (page) => {
