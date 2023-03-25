@@ -2,19 +2,22 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { StackBox } from './stack-box';
 import { Button } from './button';
+import { Results } from './results';
 import { STACKS } from '../../constants';
 import {
     setDataAC,
     setReadyAC,
 } from '../../actions/scrum-actions';
+import { setList } from '../../actions/results-actions';
 import './page.css';
 
 // TODO
-// 1.  Ошибка оценки спринта
-// 1.5 Таблицы предыдущих результатов 
+
+// 1.5 Таблицы предыдущих результатов
 // 2.  Сохранять данные в случае переподключения юзера (перезагрузка страницы)
 
 const PAGE_NAME = 'scrum';
+const LIST_MESSAGE = 'LIST_MESSAGE';
 
 export const Page = () => {
     const dispatch = useDispatch();
@@ -52,6 +55,10 @@ export const Page = () => {
             const message = JSON.parse(event.data)
             if (message.page === PAGE_NAME) {
                 dispatch(setDataAC(message));
+            }
+
+            if (message.page === LIST_MESSAGE) {
+                dispatch(setList(message.list));
             }
         }
         socket.current.onclose= (e) => {
@@ -150,6 +157,11 @@ export const Page = () => {
                         />
                     ) }
                 </div>
+                {
+                    isAdmin && (
+                        <Results />
+                    )
+                }
             </div>
         </div>
     );

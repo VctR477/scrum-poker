@@ -1,0 +1,25 @@
+.results {
+    max-height: 300px;
+    overflow: hidden;
+    overflow-y: scroll;
+    border-radius: 16px;
+    border: 1px solid grey;
+    padding: 4px;
+    border-left: 0;
+    border-right: 0;
+}
+
+/* Скрываем scrollbar для Chrome, Safari и Opera */
+.results::-webkit-scrollbar {
+    display: none;
+}
+
+/* Скрываем scrollbar для IE, Edge и Firefox */
+.results {
+    -ms-overflow-style: none;  /* IE и Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.title {
+    margin: 0 0 8px 20px;
+}

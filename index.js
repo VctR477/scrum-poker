@@ -3,6 +3,68 @@ const express = require('express');
 const path = require('path');
 const uuid = require('uuid').v4;
 const config = require('config');
+const fs = require('fs');
+
+
+const resultsDir = './build/results';
+
+const getList = () => {
+    if (!fs.existsSync(resultsDir)) {
+        return [];
+    }
+    try {
+        const files = fs.readdirSync(resultsDir);
+        if (files && files.length) {
+            const list = files
+                // Обрезаем json
+                .map(file => {
+                    return file.replace('.json', '');
+                })
+                // Фильтруем только нужные
+                .filter(file => {
+                    const regexp = /\D/g;
+                    regexp.test(file);
+                    if (regexp.test(file)) {
+                        return false;
+                    }
+                    return true;
+                })
+                .map(file => Number(file))
+                .sort((a, b) => a - b)
+                .slice(0, 10);
+
+            return list;
+        }
+    } catch (e) {
+        console.log('Ошибка чтения результатов из файлов');
+        console.log(e);
+    }
+
+    return [];
+};
+
+const makeFile = (obj, cb = ()=>{}) => {
+    const timeMark = new Date().getTime();
+
+    if (!fs.existsSync(resultsDir)){
+        fs.mkdirSync(resultsDir);
+    }
+    try {
+        const json = JSON.stringify(obj);
+        fs.writeFile(`./build/results/${timeMark}.json`, json, 'utf8', (err) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            console.log('Файл с результатами был успешно создан');
+            const list = getList();
+            cb({ list }, 'LIST_MESSAGE');
+        });
+    } catch (e) {
+        console.log('Ошибка при попытке создать файл с результатом голосования');
+        console.log(e);
+    }
+};
 
 const PORT = process.env.PORT || config.get('serverPort') || 3000 ;
 const server = express()
@@ -18,6 +80,23 @@ const server = express()
     })
     .get('/satisfaction/admin', (req, res) => {
         res.sendFile(__dirname + '/build/index.html');
+    })
+    .get('/results', (req, res) => {
+        const currentFile = req?.query?.item;
+
+        if (currentFile) {
+            try {
+                const rawdata = fs.readFileSync(`${resultsDir}/${currentFile}.json`);
+                const result = JSON.parse(rawdata);
+                res.json(result);
+            } catch (e) {
+                console.log('Не получилось прочитать результат из файла');
+                console.log(e);
+            }
+        } else {
+            const result = getList();
+            res.json(result);
+        }
     })
     .listen(PORT, () => console.log(`START --- Listening on ${ PORT }`));
 
@@ -371,7 +450,9 @@ wss.on('connection', function connection(ws) {
              */
             case 'open':
                 INITIAL_STATE[page].isOpen = true;
-                sendEveryone(getCurrentState(page), page);
+                const state = getCurrentState(page);
+                makeFile(state, sendEveryone);
+                sendEveryone(state, page);
                 break;
 
             /**

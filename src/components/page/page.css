@@ -1,6 +1,7 @@
 .page {
     display: grid;
     grid-template-columns: 850px 246px;
+    grid-template-rows: auto;
     justify-content: center;
     column-gap: 100px;
 }

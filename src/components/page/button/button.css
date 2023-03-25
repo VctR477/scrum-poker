@@ -34,3 +34,21 @@
 .button--repeat:not([disabled]):hover {
     background: #FB9015;
 }
+
+.button.button--result {
+    display: block;
+    text-align: center;
+    width: 100%;
+    background: rgba(211, 211, 211, 0.5);
+    transition: background-color ease-in 80ms;
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+.button.button--result:not([disabled]):hover {
+    background: rgba(211, 211, 211, 1);
+}
+
+.button.button--result + .button.button--result {
+    margin-top: 4px;
+}
