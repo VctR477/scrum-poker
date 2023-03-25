@@ -30,7 +30,7 @@ const getList = () => {
                     return true;
                 })
                 .map(file => Number(file))
-                .sort((a, b) => a - b)
+                .sort((a, b) => b - a)
                 .slice(0, 10);
 
             return list;

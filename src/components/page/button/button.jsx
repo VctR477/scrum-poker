@@ -7,9 +7,10 @@ export const Button = (props) => {
         disabled,
         onClick = () => {},
         type,
+        extraClass = '',
     } = props;
 
-    const className = 'button' + (type ? (' button--' + type) : '');
+    const className = extraClass + 'button' + (type ? (' button--' + type) : '');
 
     return (
         <button

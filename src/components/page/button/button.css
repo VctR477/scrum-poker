@@ -52,3 +52,7 @@
 .button.button--result + .button.button--result {
     margin-top: 4px;
 }
+
+.button.button--result.button-result--selected {
+    background: rgba(211, 211, 211, 1);
+}

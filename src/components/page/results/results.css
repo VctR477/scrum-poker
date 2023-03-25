@@ -23,3 +23,63 @@
 .title {
     margin: 0 0 8px 20px;
 }
+
+.modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(130, 130, 130, 0.5);
+}
+
+.close-modal {
+    width: 40px;
+    height: 40px;
+    border-radius: 40px;
+    position: absolute;
+    z-index: 1;
+    cursor: pointer;
+    top: 50px;
+    right: 50px;
+}
+.close-modal:before {
+    content: '+';
+    color: #337AB7;
+    position: absolute;
+    z-index: 2;
+    transform: rotate(45deg);
+    font-size: 50px;
+    line-height: 1;
+    top: -7px;
+    left: 7px;
+    transition: all 0.3s cubic-bezier(0.77, 0, 0.2, 0.85);
+}
+.close-modal:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    background: #337AB7;
+    z-index: 1;
+    transition: all 0.3s cubic-bezier(0.77, 0, 0.2, 0.85);
+    transform: scale(0.01);
+}
+.close-modal:hover:after {
+    transform: scale(1);
+}
+.close-modal:hover:before {
+    transform: scale(0.8) rotate(45deg);
+    color: #fff;
+}
+
+.results-page {
+    margin: 40px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+}
