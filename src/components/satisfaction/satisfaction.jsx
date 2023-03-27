@@ -28,6 +28,14 @@ export const Satisfaction = () => {
         average,
     } = data;
 
+    const heartbeat = () => {
+        if (!socket || !socket.current) return;
+        if (socket.current.readyState !== 1) return;
+        socket.current.send("heartbeat");
+        setTimeout(heartbeat, 1000);
+    }
+
+    // TODO вынести в хук
     const handleConnect = () => {
         const host = window.location.origin.replace(/^http/, 'ws');
         socket.current = new WebSocket(host);
@@ -56,6 +64,8 @@ export const Satisfaction = () => {
         socket.current.onerror = (e) => {
             console.log('Socket произошла ошибка', e);
         }
+
+        heartbeat();
     };
 
     const handleReady = async () => {
