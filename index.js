@@ -433,75 +433,80 @@ wss.on('connection', function connection(ws) {
 
     // Сообщение от клиента
     ws.on('message', function fromClient(rawMessage) {
-        const { type, data, page } = JSON.parse(rawMessage);
+        try {
+            const { type, data, page } = JSON.parse(rawMessage);
 
-        if (!page) {
-            return;
-        }
-        switch (type) {
-            /**
-             *  ПОДКЛЮЧЕНИЕ - ДЛЯ ОПРЕДЕЛЕНИЯ АДМИНА
-             */
-            case 'onopen':
-                const isAdmin = data.pathname === '/admin' || data.pathname === '/satisfaction/admin';
-                const user = addUser(id, isAdmin, page);
-                sendToThisUser(user, page);
-                sendEveryone(getCurrentState(page), page);
-                break;
+            if (!page) {
+                return;
+            }
+            switch (type) {
+                /**
+                 *  ПОДКЛЮЧЕНИЕ - ДЛЯ ОПРЕДЕЛЕНИЯ АДМИНА
+                 */
+                case 'onopen':
+                    const isAdmin = data.pathname === '/admin' || data.pathname === '/satisfaction/admin';
+                    const user = addUser(id, isAdmin, page);
+                    sendToThisUser(user, page);
+                    sendEveryone(getCurrentState(page), page);
+                    break;
 
 
-            /**
-             *  КЛИК ПО "Я ОЦЕНИЛ"
-             */
-            case 'ready':
-                setUserReady(id, data, page);
-                sendEveryone(getCurrentState(page), page);
-                break;
+                /**
+                 *  КЛИК ПО "Я ОЦЕНИЛ"
+                 */
+                case 'ready':
+                    setUserReady(id, data, page);
+                    sendEveryone(getCurrentState(page), page);
+                    break;
 
-            /**
-             *  ВСКРЫТИЕ
-             */
-            case 'open':
-                INITIAL_STATE[page].isOpen = true;
-                const state = getCurrentState(page);
-                makeFile(state, sendEveryone);
-                sendEveryone(state, page);
-                break;
+                /**
+                 *  ВСКРЫТИЕ
+                 */
+                case 'open':
+                    INITIAL_STATE[page].isOpen = true;
+                    const state = getCurrentState(page);
+                    makeFile(state, sendEveryone);
+                    sendEveryone(state, page);
+                    break;
 
-            /**
-             *  ПЕРЕЗАПУСК
-             */
-            case 'reload':
-                INITIAL_STATE[page].isOpen = false;
-                clearUsers(page);
-                const common = getCurrentState(page);
+                /**
+                 *  ПЕРЕЗАПУСК
+                 */
+                case 'reload':
+                    INITIAL_STATE[page].isOpen = false;
+                    clearUsers(page);
+                    const common = getCurrentState(page);
 
-                const votes = page === PAGES.SCRUM ? { votes: {} } : { vote: null };
+                    const votes = page === PAGES.SCRUM ? { votes: {} } : { vote: null };
 
-                wss.clients.forEach(function each(client) {
-                    if (client.readyState === WebSocket.OPEN) {
-                        client.send(JSON.stringify({
-                            ...common,
-                            user: {
-                                isAdmin: client === ws,
-                                isReady: false,
-                                ...votes,
-                            },
-                            page,
-                        }));
-                    }
-                });
-                break;
+                    wss.clients.forEach(function each(client) {
+                        if (client.readyState === WebSocket.OPEN) {
+                            client.send(JSON.stringify({
+                                ...common,
+                                user: {
+                                    isAdmin: client === ws,
+                                    isReady: false,
+                                    ...votes,
+                                },
+                                page,
+                            }));
+                        }
+                    });
+                    break;
 
-            /**
-             *  ОТМЕНА ГОЛОСА
-             */
-            case 'reject':
-                rejectVote(id, page);
-                sendEveryone(getCurrentState(page), page);
-                break;
-            default:
-                break;
+                /**
+                 *  ОТМЕНА ГОЛОСА
+                 */
+                case 'reject':
+                    rejectVote(id, page);
+                    sendEveryone(getCurrentState(page), page);
+                    break;
+                default:
+                    break;
+            }
+        } catch (e) {
+            console.log('Ошибка получения WebSocket сообщения');
+            console.log(e);
         }
     });
 

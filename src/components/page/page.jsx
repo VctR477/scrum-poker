@@ -41,7 +41,7 @@ export const Page = () => {
         if (!socket || !socket.current) return;
         if (socket.current.readyState !== 1) return;
         socket.current.send("heartbeat");
-        setTimeout(heartbeat, 1000);
+        setTimeout(heartbeat, 500);
     }
 
     // TODO вынести в хук
