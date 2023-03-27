@@ -15,7 +15,7 @@ const getList = () => {
     try {
         const files = fs.readdirSync(resultsDir);
         if (files && files.length) {
-            const list = files
+            let list = files
                 // Обрезаем json
                 .map(file => {
                     return file.replace('.json', '');
@@ -30,8 +30,21 @@ const getList = () => {
                     return true;
                 })
                 .map(file => Number(file))
-                .sort((a, b) => b - a)
-                .slice(0, 10);
+                .sort((a, b) => b - a);
+
+            if (list.length > 10) {
+                const toRemove = list.slice(10);
+                list = list.slice(0, 10);
+                toRemove.forEach((item) => {
+                    try {
+                        fs.rmSync(`./build/results/${item}.json`);
+                        console.log(`Успешно удалили старый файл с результатами ${item}.json (файлы удаляются когда их больше 10 штук)`);
+                    } catch (e) {
+                        console.log('Ошибка при попытке удалить файл с результатами голосования');
+                        console.log(e);
+                    }
+                })
+            }
 
             return list;
         }
