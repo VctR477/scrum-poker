@@ -1,11 +1,14 @@
 import React, { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
+import Cookies from 'js-cookie';
+
 import { Line } from './line';
 import { Button } from './button';
 import {
     setDataAC,
     setReadyAC,
 } from '../../actions/satisfaction-actins';
+
 import './satisfaction.css';
 
 const PAGE_NAME = 'satisfaction';
@@ -41,9 +44,11 @@ export const Satisfaction = () => {
         socket.current = new WebSocket(host);
 
         socket.current.onopen = function(event) {
+            const id = Cookies.get('scrumPoker');
             console.log('Socket открыт');
             const { pathname } = window.location;
             const message = {
+                id,
                 page: PAGE_NAME,
                 type: 'onopen',
                 data: { pathname },
@@ -51,7 +56,7 @@ export const Satisfaction = () => {
             socket.current.send(JSON.stringify(message));
         };
         socket.current.onmessage = (event) => {
-            const message = JSON.parse(event.data)
+            const message = JSON.parse(event.data);
             if (message.page === PAGE_NAME) {
                 dispatch(setDataAC(message));
             }

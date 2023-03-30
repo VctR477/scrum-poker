@@ -4,9 +4,10 @@ const path = require('path');
 const uuid = require('uuid').v4;
 const config = require('config');
 const fs = require('fs');
-
+const cookieParser = require('cookie-parser');
 
 const resultsDir = './build/results';
+const cookieName = 'scrumPoker';
 
 const getList = () => {
     if (!fs.existsSync(resultsDir)) {
@@ -81,6 +82,22 @@ const makeFile = (obj, cb = ()=>{}) => {
 
 const PORT = process.env.PORT || config.get('serverPort') || 3000 ;
 const server = express()
+    .use(cookieParser())
+    .use((req, res, next) => {
+        // check if client sent cookie
+        const cookie = req.cookies[cookieName];
+        const maxAge = 1000 * 60 * 30; // 30 min
+        if (cookie === undefined) {
+            const id = uuid();
+            res.cookie(cookieName, id, { maxAge });
+            console.log('cookie created successfully');
+        } else {
+            res.cookie(cookieName, cookie, { maxAge });
+            // yes, cookie was already present
+            // console.log('cookie exists (refresh time)', cookie);
+        }
+        next();
+    })
     .use(express.static(path.join(__dirname, 'build')))
     .get('/', (req, res) => {
         res.sendFile(__dirname + '/build/index.html');
@@ -133,6 +150,8 @@ const CLIENTS = {};
 //     votes: null | '1' | '2' ...
 // };
 const USERS = {};
+
+const OLD_USERS = {};
 
 const INITIAL_STATE = {
     satisfaction: {
@@ -212,22 +231,25 @@ const getDataByClients = (page) => {
          *  Считаем голоса
          */
         const votes = CLIENTS[clientId].votes;
-        Object.keys(votes).forEach((stack) => {
-            /**
-             * Общее кол-во по каждому стеку
-             */
-            sumByStack[stack] += 1;
-            /**
-             * Если результаты открыты, считаем подробно
-             */
-            if (INITIAL_STATE[page].isOpen) {
-                if (result[stack][votes[stack]]) {
-                    result[stack][votes[stack]] += 1;
-                } else {
-                    result[stack][votes[stack]] = 1;
+
+        if (votes) {
+            Object.keys(votes).forEach((stack) => {
+                /**
+                 * Общее кол-во по каждому стеку
+                 */
+                sumByStack[stack] += 1;
+                /**
+                 * Если результаты открыты, считаем подробно
+                 */
+                if (INITIAL_STATE[page].isOpen) {
+                    if (result[stack][votes[stack]]) {
+                        result[stack][votes[stack]] += 1;
+                    } else {
+                        result[stack][votes[stack]] = 1;
+                    }
                 }
-            }
-        });
+            });
+        }
 
         return acc;
     }, { all: 0, ready: 0 });
@@ -324,6 +346,55 @@ const addUser = (id, isAdmin = false, page) => {
         }
         default:
             break;
+    }
+};
+
+const getOldUser = (id, page, isAdmin) => {
+    const user = OLD_USERS[id];
+    if (user && user.page === page) {
+        switch (page) {
+            case PAGES.SCRUM: {
+                CLIENTS[id] = { ...user.user, isAdmin, votes: isAdmin ? {} : user.user.votes, isReady: isAdmin ? false : user.user.isReady };
+                break;
+            }
+            case PAGES.SATISFACTION: {
+                USERS[id] = { ...user.user, isAdmin, vote: isAdmin ? null : user.user.vote, isReady: isAdmin ? false : user.user.isReady };
+                break;
+            }
+            default:
+                break;
+        }
+        PAGES_BY_ID[id] = page;
+        return {
+            user: page === PAGES.SCRUM ? CLIENTS[id] : USERS[id],
+        };
+    }
+
+    return null;
+};
+
+const getUser = (id, page) => {
+    switch (page) {
+        case PAGES.SCRUM: {
+            if (CLIENTS[id]) {
+                return {
+                    user: CLIENTS[id],
+                };
+            } else {
+                return null;
+            }
+        }
+        case PAGES.SATISFACTION: {
+            if (USERS[id]) {
+                return {
+                    user: USERS[id],
+                };
+            } else {
+                return null;
+            }
+        }
+        default:
+            return null;
     }
 };
 
@@ -427,14 +498,13 @@ wss.on('connection', function connection(ws) {
         ws.send(JSON.stringify({ ...message, page }));
     }
 
-    const id = uuid();
-
-    console.log(`New client ${id}`);
+    let id;
 
     // Сообщение от клиента
-    ws.on('message', function fromClient(rawMessage) {
+    ws.on('message', function fromClient(rawMessage, ...args) {
         try {
-            const { type, data, page } = JSON.parse(rawMessage);
+            const message = JSON.parse(rawMessage);
+            const { type, data, page } = message;
 
             if (!page) {
                 return;
@@ -444,9 +514,18 @@ wss.on('connection', function connection(ws) {
                  *  ПОДКЛЮЧЕНИЕ - ДЛЯ ОПРЕДЕЛЕНИЯ АДМИНА
                  */
                 case 'onopen':
+                    id = message.id;
                     const isAdmin = data.pathname === '/admin' || data.pathname === '/satisfaction/admin';
-                    const user = addUser(id, isAdmin, page);
-                    sendToThisUser(user, page);
+                    const oldUser = getOldUser(id, page, isAdmin) || getUser(id, page);
+                    if (oldUser) {
+                        console.log(`Old client reconnect ${id}`);
+                        console.log(JSON.stringify({ type, data, page, oldUser }));
+                        sendToThisUser(oldUser, page);
+                    } else {
+                        console.log(`New client ${id}`);
+                        const user = addUser(id, isAdmin, page);
+                        sendToThisUser(user, page);
+                    }
                     sendEveryone(getCurrentState(page), page);
                     break;
 
@@ -515,9 +594,18 @@ wss.on('connection', function connection(ws) {
      */
 
     ws.on('close', () => {
+        if (!id) {
+            console.log(`Client closed without id - ${id}`);
+            return;
+        }
         console.log(`Client started to close ${id}`);
 
         const page = PAGES_BY_ID[id];
+        const user = getUser(id, page);
+        OLD_USERS[id] = {
+            page,
+            ...user,
+        };
         deleteUser(id, page);
         sendEveryone(getCurrentState(page), page);
 

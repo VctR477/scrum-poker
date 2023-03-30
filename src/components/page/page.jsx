@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
+import Cookies from 'js-cookie';
+
 import { StackBox } from './stack-box';
 import { Button } from './button';
 import { Results } from './results';
@@ -9,6 +11,7 @@ import {
     setReadyAC,
 } from '../../actions/scrum-actions';
 import { setList } from '../../actions/results-actions';
+
 import './page.css';
 
 // TODO
@@ -50,9 +53,11 @@ export const Page = () => {
         socket.current = new WebSocket(host);
 
         socket.current.onopen = function(event) {
+            const id = Cookies.get('scrumPoker');
             console.log('Socket открыт');
             const { pathname } = window.location;
             const message = {
+                id,
                 page: PAGE_NAME,
                 type: 'onopen',
                 data: { pathname },
@@ -60,7 +65,7 @@ export const Page = () => {
             socket.current.send(JSON.stringify(message));
         };
         socket.current.onmessage = (event) => {
-            const message = JSON.parse(event.data)
+            const message = JSON.parse(event.data);
             if (message.page === PAGE_NAME) {
                 dispatch(setDataAC(message));
             }
@@ -162,7 +167,7 @@ export const Page = () => {
                     ) : (
                         <Button
                             text="Я оценил"
-                            disabled={ isReady || isOpen || (Object.keys(votes).length === 0) }
+                            disabled={ isReady || isOpen || (votes && Object.keys(votes).length === 0) }
                             onClick={ isOpen ? undefined : handleReady }
                         />
                     ) }
