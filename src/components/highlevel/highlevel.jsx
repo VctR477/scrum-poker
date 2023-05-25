@@ -9,6 +9,8 @@ import {
     setReadyAC,
 } from '../../actions/highlevel-actions';
 
+import { Tabs } from '../tabs';
+
 import './highlevel.css';
 
 const PAGE_NAME = 'highlevel';
@@ -114,21 +116,7 @@ export const Highlevel = () => {
     }, [handleConnect, socket]);
 
     return (
-        <div>
-            <div className="nav">
-                <a
-                    className="link"
-                    href="/"
-                >
-                    -> Оценка задачи
-                </a>
-                <a
-                    className="link"
-                    href="/satisfaction"
-                >
-                    -> Оценка спринта
-                </a>
-            </div>
+        <Tabs>
             <div className="page">
                 <div className="page__stacks page__satisfaction">
                     <Line
@@ -161,6 +149,6 @@ export const Highlevel = () => {
                     ) }
                 </div>
             </div>
-        </div>
+        </Tabs>
     );
 };

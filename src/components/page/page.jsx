@@ -11,6 +11,7 @@ import {
     setReadyAC,
 } from '../../actions/scrum-actions';
 import { setList } from '../../actions/results-actions';
+import { Tabs } from '../tabs';
 
 import './page.css';
 
@@ -128,21 +129,8 @@ export const Page = () => {
     }, [handleConnect, socket]);
 
     return (
-        <div>
-            <div className="nav">
-                <a
-                    className="link"
-                    href="/satisfaction"
-                >
-                     -> Оценка спринта
-                </a>
-                <a
-                    className="link"
-                    href="/highlevel"
-                >
-                    -> Верхнеуровневая оценка
-                </a>
-            </div>
+       <Tabs>
+
             <div className="page">
                 <div className="page__stacks">
                     { STACKS.map((stack) => {
@@ -186,6 +174,6 @@ export const Page = () => {
                     )
                 }
             </div>
-        </div>
+       </Tabs>
     );
 };

@@ -8,6 +8,7 @@ import {
     setDataAC,
     setReadyAC,
 } from '../../actions/satisfaction-actins';
+import { Tabs } from '../tabs';
 
 import './satisfaction.css';
 
@@ -115,22 +116,7 @@ export const Satisfaction = () => {
     }, [handleConnect, socket]);
 
     return (
-        <div>
-            <div className="nav">
-                <a
-                    className="link"
-                    href="/"
-                >
-                    -> Оценка задачи
-                </a>
-                <a
-                    className="link"
-                    href="/highlevel"
-                >
-                    -> Верхнеуровневая оценка
-                </a>
-            </div>
-
+        <Tabs>
             <div className="page">
                 <div className="page__stacks page__satisfaction">
                     <Line
@@ -164,6 +150,6 @@ export const Satisfaction = () => {
                     ) }
                 </div>
             </div>
-        </div>
+        </Tabs>
     );
 };

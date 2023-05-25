@@ -1,0 +1,36 @@
+.tabs__tabs {
+    display: flex;
+}
+
+.tabs__link {
+    color: rgba(0, 0, 0, 0.5);
+    padding: 14px;
+    border: 1px solid black;
+    text-decoration: none;
+    border-right: 0;
+}
+
+.tabs__link:hover {
+    box-shadow: 0 0 8px rgba(0, 0, 0, .3) inset;
+    color: black;
+}
+
+.tabs__link:last-of-type {
+    border-right: 1px solid black;
+}
+
+.tabs__content {
+    padding-top: 40px;
+}
+
+.tabs__filler {
+    border-bottom: 1px solid black;
+    flex-grow: 1;
+}
+
+.tabs__link--select {
+    color: black;
+    border-bottom: 0;
+    cursor: auto;
+    pointer-events: none;
+}

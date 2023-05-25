@@ -11,40 +11,11 @@
 }
 
 .app {
-   padding: 40px;
-}
-
-.nav {
-  position: relative;
-  top: -20px;
-  left: -20px;
-  display: inline-flex;
-  flex-direction: column;
-}
-
-.link {
-  display: inline-block;
-  padding: 10px;
-  border: 1px dashed;
-  text-decoration: none;
-}
-
-.link:hover {
-  border: 1px solid;
-  box-shadow: 0 0 8px rgba(0, 0, 0, .3) inset;
-}
-
-.link + .link {
-  margin-top: 8px;
+   padding: 20px;
 }
 
 @media screen and (max-width: 500px) {
   .app {
     padding: 10px;
-  }
-
-  .link {
-    top: -5px;
-    left: -5px;
   }
 }
