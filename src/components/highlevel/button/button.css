@@ -1,0 +1,36 @@
+.button {
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 30px;
+    line-height: 42px;
+    color: var(--text-color);
+    border-radius: 16px;
+    padding: 9px 21px;
+    border: 0;
+    background: #8EC9FF;
+}
+
+.button:not([disabled]):hover {
+    background: #42A4FF;
+}
+
+.button[disabled] {
+    cursor: auto;
+    opacity: 0.5;
+}
+
+.button--open {
+    background: #B6E78F;
+}
+
+.button--open:not([disabled]):hover {
+    background: #74CA2F;
+}
+
+.button--repeat {
+    background: #F1BA7B;
+}
+
+.button--repeat:not([disabled]):hover {
+    background: #FB9015;
+}

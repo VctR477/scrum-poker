@@ -1,0 +1,18 @@
+.card-column__amount {
+    margin-top: 8px;
+}
+
+.card-column__voice {
+    height: 5px;
+    width: var(--card-width);
+    border-radius: var(--border-radius);
+    background: var(--card-dark);
+}
+
+.card-column__voice + .card-column__voice {
+    margin-top: 4px;
+}
+
+.card-column__highlevel + .card-column__highlevel {
+    margin-top: 10px;
+}

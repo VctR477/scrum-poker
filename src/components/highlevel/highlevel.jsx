@@ -7,17 +7,17 @@ import { Button } from './button';
 import {
     setDataAC,
     setReadyAC,
-} from '../../actions/satisfaction-actins';
+} from '../../actions/highlevel-actions';
 
-import './satisfaction.css';
+import './highlevel.css';
 
-const PAGE_NAME = 'satisfaction';
+const PAGE_NAME = 'highlevel';
 
-export const Satisfaction = () => {
+export const Highlevel = () => {
     const dispatch = useDispatch();
     const socket = useRef();
 
-    const data = useSelector(state => state.satisfaction);
+    const data = useSelector(state => state.highlevel);
     const {
         isOpen,
         all,
@@ -28,7 +28,6 @@ export const Satisfaction = () => {
             isReady,
             vote,
         },
-        average,
     } = data;
 
     const heartbeat = () => {
@@ -125,12 +124,11 @@ export const Satisfaction = () => {
                 </a>
                 <a
                     className="link"
-                    href="/highlevel"
+                    href="/satisfaction"
                 >
-                    -> Верхнеуровневая оценка
+                    -> Оценка спринта
                 </a>
             </div>
-
             <div className="page">
                 <div className="page__stacks page__satisfaction">
                     <Line
@@ -139,7 +137,6 @@ export const Satisfaction = () => {
                         onReject={ isReady ? handleReject : null }
                         ready={ ready }
                         isOpen={ isOpen }
-                        average={ average }
                     />
                 </div>
                 <div className="page__controls">

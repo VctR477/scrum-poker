@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom';
 import { Page } from './components/page';
 import { Satisfaction } from './components/satisfaction';
+import { Highlevel } from './components/highlevel';
 import { reducer } from './reducers';
 import './app.css';
 
@@ -27,6 +28,14 @@ const router = createBrowserRouter([
     {
         path: '/satisfaction/admin',
         element: <Satisfaction />,
+    },
+    {
+        path: '/highlevel',
+        element: <Highlevel />,
+    },
+    {
+        path: '/highlevel/admin',
+        element: <Highlevel />,
     }
 ]);
 

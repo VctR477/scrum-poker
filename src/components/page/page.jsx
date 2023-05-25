@@ -129,12 +129,20 @@ export const Page = () => {
 
     return (
         <div>
-            <a
-                className="link"
-                href="/satisfaction"
-            >
-                 -> Оценка спринта
-            </a>
+            <div className="nav">
+                <a
+                    className="link"
+                    href="/satisfaction"
+                >
+                     -> Оценка спринта
+                </a>
+                <a
+                    className="link"
+                    href="/highlevel"
+                >
+                    -> Верхнеуровневая оценка
+                </a>
+            </div>
             <div className="page">
                 <div className="page__stacks">
                     { STACKS.map((stack) => {

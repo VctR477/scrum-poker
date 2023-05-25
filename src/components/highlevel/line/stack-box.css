@@ -1,0 +1,26 @@
+.stack-box__title {
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 42px;
+    color: var(--text-color);
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.line {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin: 20px auto;
+}
+
+.line__highlevel {
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.stack-box__count {
+    color: darkgray;
+    cursor: default;
+}
