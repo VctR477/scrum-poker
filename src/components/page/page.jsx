@@ -129,8 +129,7 @@ export const Page = () => {
     }, [handleConnect, socket]);
 
     return (
-       <Tabs>
-
+       <Tabs isAdmin={ isAdmin }>
             <div className="page">
                 <div className="page__stacks">
                     { STACKS.map((stack) => {

@@ -11,9 +11,9 @@ export const CardRow = (props) => {
     return (
         <div className="card-column card-column__highlevel">
             <Card { ...other } />
-            <div className="card-column__amount">
+            <div className="card-column__amount card-column__amount--highlevel">
                 { new Array(amount).fill().map((_, idx) => (
-                    <div key={ idx } className="card-column__voice" />
+                    <div key={ idx } className="card-column__voice card-column__voice--highlevel" />
                 )) }
             </div>
         </div>

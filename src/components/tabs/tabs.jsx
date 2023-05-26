@@ -17,8 +17,12 @@ const URLS = [
     },
 ];
 
-export const Tabs = ({ children }) => {
+export const Tabs = ({ isAdmin, children }) => {
     const { pathname } = useLocation();
+    let targetPath = isAdmin ? pathname.replace('/admin', '') : pathname;
+    if (!targetPath) {
+        targetPath = '/';
+    }
     return (
         <div className="tabs">
             <div className="tabs__tabs">
@@ -26,7 +30,7 @@ export const Tabs = ({ children }) => {
                     URLS.map(({ href, text }) => (
                         <a
                             key={ text }
-                            className={ `tabs__link${pathname === href ? ' tabs__link--select' : ''}` }
+                            className={ `tabs__link${targetPath === href ? ' tabs__link--select' : ''}` }
                             href={ href }
                         >
                             { text }

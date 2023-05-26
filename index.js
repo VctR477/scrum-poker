@@ -111,6 +111,12 @@ const server = express()
     .get('/satisfaction/admin', (req, res) => {
         res.sendFile(__dirname + '/build/index.html');
     })
+    .get('/highlevel', (req, res) => {
+        res.sendFile(__dirname + '/build/index.html');
+    })
+    .get('/highlevel/admin', (req, res) => {
+        res.sendFile(__dirname + '/build/index.html');
+    })
     .get('/results', (req, res) => {
         const currentFile = req?.query?.item;
 
@@ -135,6 +141,7 @@ const wss = new WebSocket.Server({ server: server });
 const PAGES = {
     SCRUM: 'scrum',
     SATISFACTION: 'satisfaction',
+    HIGHLEVEL: 'highlevel',
 };
 
 // CLIENTS[clientId] = {
@@ -151,9 +158,32 @@ const CLIENTS = {};
 // };
 const USERS = {};
 
+// USERS_1[clientId] = {
+//     isAdmin: false,
+//     isReady: false,
+//     votes: null | '1' | '2' ...
+// };
+const USERS_1 = {};
+
 const OLD_USERS = {};
 
 const INITIAL_STATE = {
+    highlevel: {
+        isOpen: false,
+        all: 0,
+        ready: 0,
+        result: {
+            '1': 0,
+            '2': 0,
+            '3': 0,
+            '4': 0,
+            '5': 0,
+            '6': 0,
+            '7': 0,
+            '8': 0,
+            '9': 0,
+        },
+    },
     satisfaction: {
         isOpen: false,
         all: 0,
@@ -263,6 +293,49 @@ const getDataByClients = (page) => {
     };
 };
 
+const getDataForHighLevel = (page) => {
+    const result = {
+        '1': 0,
+        '2': 0,
+        '3': 0,
+        '4': 0,
+        '5': 0,
+        '6': 0,
+        '7': 0,
+        '8': 0,
+        '9': 0,
+        '10': 0,
+    };
+
+    let sum = 0;
+
+    const { all, ready } = Object.keys(USERS_1).reduce((acc, userId ) => {
+        if (USERS_1[userId].isAdmin) {
+            return acc;
+        }
+
+        if (USERS_1[userId].isReady) {
+            acc.ready += 1;
+        }
+        acc.all += 1;
+        if (USERS_1[userId].vote) {
+            sum = sum + Number(USERS_1[userId].vote);
+            result[USERS_1[userId].vote] += 1;
+        }
+
+        return acc;
+    }, { all: 0, ready: 0 });
+
+    const isOpen = INITIAL_STATE[page].isOpen;
+
+    return {
+        isOpen,
+        all,
+        ready,
+        result,
+    };
+};
+
 const getDataByUsers = (page) => {
     const result = {
         '1': 0,
@@ -314,6 +387,9 @@ const getCurrentState = (page) => {
         case PAGES.SATISFACTION: {
             return getDataByUsers(page);
         }
+        case PAGES.HIGHLEVEL: {
+            return getDataForHighLevel(page);
+        }
         default:
             return getDataByClients(page);
     }
@@ -344,6 +420,16 @@ const addUser = (id, isAdmin = false, page) => {
                 user: USERS[id],
             };
         }
+        case PAGES.HIGHLEVEL: {
+            USERS_1[id] = {
+                isAdmin,
+                isReady: false,
+                vote: null,
+            };
+            return {
+                user: USERS_1[id],
+            };
+        }
         default:
             break;
     }
@@ -361,12 +447,29 @@ const getOldUser = (id, page, isAdmin) => {
                 USERS[id] = { ...user.user, isAdmin, vote: isAdmin ? null : user.user.vote, isReady: isAdmin ? false : user.user.isReady };
                 break;
             }
+            case PAGES.HIGHLEVEL: {
+                USERS_1[id] = { ...user.user, isAdmin, vote: isAdmin ? null : user.user.vote, isReady: isAdmin ? false : user.user.isReady };
+                break;
+            }
             default:
                 break;
         }
         PAGES_BY_ID[id] = page;
+
+        if (page === PAGES.SCRUM) {
+            return {
+                user: CLIENTS[id],
+            };
+        }
+
+        if (page === PAGES.SATISFACTION) {
+            return {
+                user: USERS[id],
+            };
+        }
+
         return {
-            user: page === PAGES.SCRUM ? CLIENTS[id] : USERS[id],
+            user: USERS_1[id],
         };
     }
 
@@ -388,6 +491,15 @@ const getUser = (id, page) => {
             if (USERS[id]) {
                 return {
                     user: USERS[id],
+                };
+            } else {
+                return null;
+            }
+        }
+        case PAGES.HIGHLEVEL: {
+            if (USERS_1[id]) {
+                return {
+                    user: USERS_1[id],
                 };
             } else {
                 return null;
@@ -420,6 +532,16 @@ const setUserReady = (id, votes, page) => {
                 user: USERS[id],
             };
         }
+        case PAGES.HIGHLEVEL: {
+            USERS_1[id] = {
+                isAdmin: false,
+                isReady: true,
+                vote: votes,
+            };
+            return {
+                user: USERS_1[id],
+            };
+        }
         default:
             break;
     }
@@ -438,6 +560,13 @@ const clearUsers = (page) => {
             Object.keys(USERS).forEach((clientId) => {
                 USERS[clientId].isReady = false;
                 USERS[clientId].vote = null;
+            });
+        }
+            break;
+        case PAGES.HIGHLEVEL: {
+            Object.keys(USERS_1).forEach((clientId) => {
+                USERS_1[clientId].isReady = false;
+                USERS_1[clientId].vote = null;
             });
         }
             break;
@@ -464,6 +593,14 @@ const rejectVote = (id, page) => {
             };
         }
             break;
+        case PAGES.HIGHLEVEL: {
+            USERS_1[id] = {
+                isAdmin: false,
+                isReady: false,
+                vote: null,
+            };
+        }
+            break;
         default:
             break;
     }
@@ -478,6 +615,10 @@ const deleteUser = (id, page) => {
             break;
         case PAGES.SATISFACTION: {
             delete USERS[id];
+        }
+            break;
+        case PAGES.HIGHLEVEL: {
+            delete USERS_1[id];
         }
             break;
         default:
@@ -515,7 +656,7 @@ wss.on('connection', function connection(ws) {
                  */
                 case 'onopen':
                     id = message.id;
-                    const isAdmin = data.pathname === '/admin' || data.pathname === '/satisfaction/admin';
+                    const isAdmin = data.pathname === '/admin' || data.pathname === '/satisfaction/admin' || data.pathname === '/highlevel/admin';
                     const oldUser = getOldUser(id, page, isAdmin) || getUser(id, page);
                     if (oldUser) {
                         console.log(`Old client reconnect ${id}`);
@@ -544,7 +685,9 @@ wss.on('connection', function connection(ws) {
                 case 'open':
                     INITIAL_STATE[page].isOpen = true;
                     const state = getCurrentState(page);
-                    makeFile(state, sendEveryone);
+                    if (page === PAGES.SCRUM) {
+                        makeFile(state, sendEveryone);
+                    }
                     sendEveryone(state, page);
                     break;
 

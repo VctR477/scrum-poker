@@ -116,14 +116,13 @@ export const Highlevel = () => {
     }, [handleConnect, socket]);
 
     return (
-        <Tabs>
+        <Tabs isAdmin={ isAdmin }>
             <div className="page">
                 <div className="page__stacks page__satisfaction">
                     <Line
                         result={ isOpen ? result : {} }
                         vote={ vote }
                         onReject={ isReady ? handleReject : null }
-                        ready={ ready }
                         isOpen={ isOpen }
                     />
                 </div>

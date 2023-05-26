@@ -15,7 +15,7 @@
 }
 
 .line__highlevel {
-    align-items: center;
+    align-items: start;
     justify-content: center;
     flex-direction: column;
 }

@@ -13,6 +13,36 @@
     margin-top: 4px;
 }
 
+.card-column__highlevel {
+    display: flex;
+    position: relative;
+    margin-left: 360px;
+}
+
+@media screen and (max-width: 1196px) {
+    .card-column__highlevel {
+        margin-left: 0;
+    }
+}
+
 .card-column__highlevel + .card-column__highlevel {
     margin-top: 10px;
+}
+
+.card-column__amount--highlevel {
+    margin-top: 0;
+    margin-left: 12px;
+    display: flex;
+}
+
+.card-column__voice--highlevel {
+    height: 60px;
+    width: 6px;
+    border-radius: var(--border-radius);
+    background: var(--card-dark);
+}
+
+.card-column__voice--highlevel + .card-column__voice--highlevel {
+    margin-top: 0;
+    margin-left: 4px;
 }

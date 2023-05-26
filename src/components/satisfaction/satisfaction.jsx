@@ -116,7 +116,7 @@ export const Satisfaction = () => {
     }, [handleConnect, socket]);
 
     return (
-        <Tabs>
+        <Tabs isAdmin={ isAdmin }>
             <div className="page">
                 <div className="page__stacks page__satisfaction">
                     <Line
