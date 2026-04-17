@@ -9,6 +9,7 @@ import {
 import { Page } from './components/page';
 import { Satisfaction } from './components/satisfaction';
 import { Highlevel } from './components/highlevel';
+import { Award } from './components/award';
 import { reducer } from './reducers';
 import './app.css';
 
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
     {
         path: '/highlevel/admin',
         element: <Highlevel />,
+    },
+    {
+        path: '/award',
+        element: <Award />,
     }
 ]);
 

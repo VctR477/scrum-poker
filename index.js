@@ -117,6 +117,9 @@ const server = express()
     .get('/highlevel/admin', (req, res) => {
         res.sendFile(__dirname + '/build/index.html');
     })
+    .get('/award', (req, res) => {
+        res.sendFile(__dirname + '/build/index.html');
+    })
     .get('/results', (req, res) => {
         const currentFile = req?.query?.item;
 

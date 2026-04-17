@@ -1,0 +1,2 @@
+export { Award } from './award';
+
