@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './award.css';
 
 const parseNumber = (value) => {
@@ -57,6 +57,9 @@ const FormulaSvg = () => {
 
 export const Award = () => {
     const [salaryPerMonth, setSalaryPerMonth] = useState('');
+    const [targetPercent, setTargetPercent] = useState('15');
+    const [cprManual, setCprManual] = useState(false);
+    const [cprValue, setCprValue] = useState('');
     const [sc, setSc] = useState('1');
     const [voc, setVoc] = useState('1');
 
@@ -64,10 +67,21 @@ export const Award = () => {
     const [includedPercent, setIncludedPercent] = useState('51');
     const [daysInPath, setDaysInPath] = useState('60');
 
-    const cpr = useMemo(() => {
+    const cprAuto = useMemo(() => {
         const salary = parseNumber(salaryPerMonth);
-        return salary * 3 * 0.15;
-    }, [salaryPerMonth]);
+        const pct = parseNumber(targetPercent);
+        return salary * 3 * (pct / 100);
+    }, [salaryPerMonth, targetPercent]);
+
+    useEffect(() => {
+        if (!cprManual) {
+            setCprValue(String(cprAuto || 0));
+        }
+    }, [cprAuto, cprManual]);
+
+    const cpr = useMemo(() => {
+        return cprManual ? parseNumber(cprValue) : cprAuto;
+    }, [cprAuto, cprManual, cprValue]);
 
     const eligibility = useMemo(() => {
         const pct = parseNumber(includedPercent);
@@ -121,7 +135,7 @@ export const Award = () => {
                     <div className="award__card" style={{ marginTop: 16 }}>
                         <h3 className="award__title">Расшифровка</h3>
                         <div className="award__muted">
-                            <b>ЦПР</b> — целевой размер премии. Вводим <b>оклад за месяц</b>, ЦПР считаем как <b>оклад × 3 × 15%</b>.<br /><br />
+                            <b>ЦПР</b> — целевой размер премии. Обычно считаем от <b>оклада за месяц</b> и <b>целевого % премии</b> (формула <b>оклад × 3 × %</b>), но при нестандартном случае можно ввести ЦПР вручную.<br /><br />
                             <b>SC</b> — ScoreCard (КПЭ для КП/стрима).<br />
                             <b>VOC</b> — Voice of Client (метрика “голос клиента”).<br />
                             <b>Оценка</b> — 50% CJO + 50% ФР (диапазон 5%–150%).<br />
@@ -147,12 +161,40 @@ export const Award = () => {
                         </div>
 
                         <div className="award__field">
-                            <div className="award__label">ЦПР (оклад × 3 × 15%)</div>
+                            <div className="award__label">Целевой % премии</div>
                             <input
                                 className="award__input"
-                                value={ formatMoney(cpr) }
-                                readOnly
+                                value={ targetPercent }
+                                onChange={ (e) => setTargetPercent(e.target.value) }
+                                inputMode="decimal"
+                                placeholder="15"
                             />
+                        </div>
+
+                        <div className="award__field">
+                            <div className="award__label">ЦПР</div>
+                            <input
+                                className={ `award__input${cprManual ? '' : ' award__input--readonly'}` }
+                                value={ cprManual ? cprValue : formatMoney(cprAuto) }
+                                onChange={ cprManual ? (e) => setCprValue(e.target.value) : undefined }
+                                readOnly={ !cprManual }
+                                inputMode="decimal"
+                                placeholder="введите ЦПР"
+                            />
+                            <div className="award__muted" style={{ fontSize: 12 }}>
+                                Узнай ЦПР у руководителя.
+                            </div>
+                        </div>
+
+                        <div className="award__field award__field--checkboxAlign">
+                            <label className="award__checkboxRow">
+                                <input
+                                    type="checkbox"
+                                    checked={ cprManual }
+                                    onChange={ (e) => setCprManual(e.target.checked) }
+                                />
+                                <span className="award__label">Ввести ЦПР вручную</span>
+                            </label>
                         </div>
 
                         <div className="award__field">
