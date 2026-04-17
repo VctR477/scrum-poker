@@ -139,6 +139,34 @@
     }
 }
 
+@media (max-width: 640px) {
+    .award__card {
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .award__title {
+        font-size: 16px;
+    }
+
+    .award__form {
+        grid-template-columns: 1fr;
+    }
+
+    .award__bigNumber {
+        font-size: 22px;
+    }
+
+    .award__field--checkboxAlign {
+        padding-top: 0;
+    }
+
+    .award__checkboxRow {
+        height: auto;
+        padding: 6px 0;
+    }
+}
+
 @media (min-width: 1200px) {
     .award {
         transform: translateX(-15%);
