@@ -24,23 +24,6 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
 }
 
-.award__card--inputs .award__title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.award__card--inputs .award__title::after {
-    content: "введите значения";
-    font-size: 12px;
-    font-weight: 600;
-    color: rgba(0, 0, 0, 0.55);
-    padding: 4px 8px;
-    border-radius: 999px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    background: rgba(255, 255, 255, 0.55);
-}
-
 .award__title {
     margin: 0 0 12px 0;
     font-size: 18px;
@@ -62,6 +45,14 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+}
+
+.award__scvoc {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    align-items: start;
 }
 
 .award__label {
@@ -98,6 +89,36 @@
     margin-top: 12px;
     padding-top: 12px;
     border-top: 1px dashed rgba(0, 0, 0, 0.25);
+}
+
+.award__important {
+    margin-top: 4px;
+}
+
+.award__important-title {
+    margin-bottom: 8px;
+    line-height: 1.35;
+}
+
+.award__important-title-bold {
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.award__important-title-note {
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.55);
+}
+
+.award__important-list {
+    margin: 0;
+    padding-left: 1.15em;
+    color: rgba(0, 0, 0, 0.65);
+    line-height: 1.45;
+}
+
+.award__important-list li + li {
+    margin-top: 6px;
 }
 
 .award__pill {
@@ -145,6 +166,10 @@
     }
 
     .award__form {
+        grid-template-columns: 1fr;
+    }
+
+    .award__scvoc {
         grid-template-columns: 1fr;
     }
 

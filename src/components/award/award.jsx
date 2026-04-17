@@ -108,8 +108,9 @@ export const Award = () => {
                     <div className="award__card" style={{ marginTop: 16 }}>
                         <h3 className="award__title">Условия премирования за квартал</h3>
                         <div className="award__muted">
-                            Условия зависят от контекста (включая учёт не полного квартала, больничных/отгулов и др.).
-                            Проверьте условия премирования и применимость расчёта самостоятельно.
+                            - сотрудник в штате Банка<br />
+                            - включён в клиентский путь не менее 51% (≥ 51%)<br />
+                            - отработал в КП не менее 60 дней за расчётный квартал
                         </div>
                     </div>
 
@@ -167,26 +168,28 @@ export const Award = () => {
                             />
                         </div>
 
-                        <div className="award__field">
-                            <div className="award__label">SC (коэффициент)</div>
-                            <input
-                                className="award__input"
-                                value={ sc }
-                                onChange={ (e) => setSc(e.target.value) }
-                                inputMode="decimal"
-                                placeholder="например 1"
-                            />
-                        </div>
+                        <div className="award__scvoc">
+                            <div className="award__field">
+                                <div className="award__label">SC (коэффициент)</div>
+                                <input
+                                    className="award__input"
+                                    value={ sc }
+                                    onChange={ (e) => setSc(e.target.value) }
+                                    inputMode="decimal"
+                                    placeholder="например 1"
+                                />
+                            </div>
 
-                        <div className="award__field">
-                            <div className="award__label">VOC (коэффициент)</div>
-                            <input
-                                className="award__input"
-                                value={ voc }
-                                onChange={ (e) => setVoc(e.target.value) }
-                                inputMode="decimal"
-                                placeholder="например 1"
-                            />
+                            <div className="award__field">
+                                <div className="award__label">VOC (коэффициент)</div>
+                                <input
+                                    className="award__input"
+                                    value={ voc }
+                                    onChange={ (e) => setVoc(e.target.value) }
+                                    inputMode="decimal"
+                                    placeholder="например 1"
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -196,8 +199,19 @@ export const Award = () => {
                             <div className="award__bigNumber">{ formatMoney(premium) } ₽</div>
                         </div>
 
-                        <div className="award__muted">
-                            ⚠️ Важно: НДФЛ в расчёт не включён — при необходимости учтите его самостоятельно.
+                        <div className="award__important">
+                            <div className="award__important-title">
+                                <span className="award__important-title-bold">⚠️ Важно</span>
+                                <span className="award__important-title-note"> (учтите эти пункты самостоятельно)</span>
+                            </div>
+                            <ul className="award__important-list">
+                                <li>НДФЛ в расчёт не включён.</li>
+                                <li>
+                                    Если квартал отработан не полностью, но вы в КП не менее 60 дней, итоговая сумма будет
+                                    пропорциональна отработанным дням.
+                                </li>
+                                <li>Вы должны быть в штате Банка и включены в КП ≥ 51%.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
