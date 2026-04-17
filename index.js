@@ -9,6 +9,21 @@ const cookieParser = require('cookie-parser');
 const resultsDir = './build/results';
 const cookieName = 'scrumPoker';
 
+const AWARD_META_TITLE = 'ONA · Расчёт квартальной премии';
+
+const sendBuildIndexHtml = (res, { award } = {}) => {
+    const indexPath = path.join(__dirname, 'build', 'index.html');
+    let html = fs.readFileSync(indexPath, 'utf8');
+    if (award) {
+        html = html.replace(/<title>[^<]*<\/title>/, `<title>${AWARD_META_TITLE}</title>`);
+        html = html.replace(
+            /<meta property="og:title" content="[^"]*"\s*\/?>/,
+            `<meta property="og:title" content="${AWARD_META_TITLE}" />`,
+        );
+    }
+    res.type('html').send(html);
+};
+
 const getList = () => {
     if (!fs.existsSync(resultsDir)) {
         return [];
@@ -118,7 +133,7 @@ const server = express()
         res.sendFile(__dirname + '/build/index.html');
     })
     .get('/award', (req, res) => {
-        res.sendFile(__dirname + '/build/index.html');
+        sendBuildIndexHtml(res, { award: true });
     })
     .get('/results', (req, res) => {
         const currentFile = req?.query?.item;
